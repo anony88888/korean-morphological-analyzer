@@ -12,16 +12,18 @@
 #include <MA_GMacro.h>
 #include <MA_ReturnCode.h>
 
-/* The result situation of Function Execution */
-/* Success : SUCCESS, Fail : FAIL */
+/*
+ * The result situation of Function Execution 
+ *					Success : SUCCESS, Fail : FAIL
+ * BYTE *fname;	File Name
+ * UWORD mode;	Open Mode : F_READ, F_WRITE, F_APPEND
+ * UWORD exec_mode;	Execution Mode : EM_EXIT, EM_RETURN
+ *  					EM_EXIT : exit when error occur
+ * 					EM_RETURN : return fail code when error occur
+ * UWORD file_mode;	F_TEXT : Text mode file open
+ * 					F_BINARY : Binary mode file open
+ */
 UWORD UTIL_FileOpen(BYTE *fname, UWORD mode, UWORD exec_mode, UWORD file_mode, FILE **fd)
-/* BYTE *fname;		 File Name */
-/* UWORD mode;		 Open Mode : F_READ, F_WRITE, F_APPEND */
-/* UWORD exec_mode;	 Execution Mode : EM_EXIT, EM_RETURN */
-			 /* - EM_EXIT : exit when error occur */
-			 /* - EM_RETURN : return fail code when error occur */
-/* UWORD file_mode;	 F_TEXT : Text mode file open */
-			 /* F_BINARY : Binary mode file open */
 {
 	BYTE f_mode[VS_BUFLEN];
 	switch (mode) {

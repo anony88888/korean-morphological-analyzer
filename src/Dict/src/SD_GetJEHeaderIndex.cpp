@@ -16,8 +16,7 @@
 #include <MADIC_Josa.h>
 #include <MADIC_Eomi.h>
 #include <MADIC_Bojo.h>
-
-extern UWORD jo2wan[][3];
+#include <MA_Jo2Wan.h>
 
 DWORD GetJosaHeaderIndex(UWORD one_char)
 {

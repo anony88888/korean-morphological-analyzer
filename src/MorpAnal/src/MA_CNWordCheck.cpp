@@ -16,14 +16,15 @@
 #include <MA_Func.h>
 #include <MADIC_Type.h>
 #include <MA_Interface.h>
+#include <MA_Jo2Wan.h>
 
 #ifdef COMP_NOUN_DIC_CHECK
 #define MAX_DUP		10
+
 /*
  * 1 --> 분석 성공
  * 0 --> 분석 실패
  */
-
 DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RESULT *CNMorpRes, UWORD *CNMorpRes_Index)
 {
     CNDIC_RESULT CN_Result[DIC_RESULT_NUM];
@@ -43,8 +44,6 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
    	DWORD merge_flag=0;
 	UBYTE merge_str[VS_BUFLEN];
 		
-	extern DWORD ConvertJo2Wan(HANGUL *h_word, UWORD h_word_len, UBYTE *wan_str);
-
     *CNMorpRes_Index = 0;
     MR_num = 0;
 
@@ -333,7 +332,6 @@ DWORD CNOutputMAResult(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, DWORD o
     DWORD DicInfoValue;
     UBYTE han_str[VS_BUFLEN];
     H_CHAR one_han;
-    extern UWORD jo2wan[][3];
 
     if (M_MORPRESULT_INDEX == 0) {
 	for (i = 0; i < CNMorpRes_Index; i++) {
@@ -474,7 +472,6 @@ DWORD CNFilterMAResult(ITF_MA_RESULT *ma_result, tCNMORP_RESULT *CNMorpRes, UWOR
     DWORD DicInfoValue;
     char/*UBYTE*/ han_str[VS_BUFLEN];
     H_CHAR one_han;
-    extern UWORD jo2wan[][3];
 
     if (M_MORPRESULT_INDEX == 0) {
 	for (i = 0; i < CNMorpRes_Index; i++) {

@@ -18,6 +18,7 @@
 #include <MADIC_Type.h>
 #include <MADIC_DicInfo.h>
 #include <MADIC_Func.h>
+#include <MA_Jo2Wan.h>
 
 #include <boost/scoped_array.hpp>
 
@@ -38,7 +39,6 @@ DWORD CheckCompNoun(HANGUL *h_word, UWORD h_word_len, HANGUL pre_char, UWORD inf
 	//DWORD chk_93_info_idx;
 	UWORD h_idx;
 	DWORD ret_val, new_idx;
-	extern UWORD jo2wan[][3];
 	DWORD cnt;
 	DWORD DAdj[100][20];
 	tSTACK comp_stack[100];

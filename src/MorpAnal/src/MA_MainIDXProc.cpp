@@ -23,6 +23,7 @@
 #include <MADIC_Func.h>
 #include <MADIC_Type.h>
 #include <MA_Interface.h>
+#include <MA_Jo2Wan.h>
 
 #define MAX_INPUT_WORD_LEN		40
 
@@ -627,10 +628,6 @@ DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 	DWORD conv_ret;
 	UWORD i;
 
-#if 1
-	
-	extern DWORD ConvertJo2Wan(HANGUL *h_word, UWORD h_word_len, UBYTE *wan_str);
-
 	/*
 	 * 조합형 어절을 완벽하게 처리를 하려면, 사전의 구조도 조합형에 맞게끔 바뀌어야 한다.
 	 * 조합형 사전을 구성하려면 현재 2350개로 제한되어 있는 사전 헤더를 확장해야 하고,
@@ -783,7 +780,6 @@ DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 #endif
 	}
 
-#endif
 	return r_val2;
 }
 

@@ -558,7 +558,6 @@ DWORD CheckUserAnswerDic(HANGUL *hword, UWORD hword_len, UWORD h_idx, tUADMORP_R
     UWORD idx;
     UWORD PostWordStartPos, PostWordLen;
 
-	extern DWORD ConvertJo2Wan(HANGUL *h_word, UWORD h_word_len, UBYTE *wan_str);
 	*UADMorpRes_Index = 0;
     MR_num = 0;
 
