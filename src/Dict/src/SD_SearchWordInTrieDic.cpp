@@ -16,6 +16,20 @@
 #include <MADIC_Global.h>
 #include <MADIC_Func.h>
 
+DIC_HEADER	Dic_Header[HEADER_NUM];		/*
+										The Header Information for positioning the cursor according to hangul code 
+										This information is the location where nodes of each hangul code exists 
+										*/
+DIC_NODE*	Dic_Roots[HEADER_NUM];		/*
+										The root nodes --> 51+2350 wansung hangul code
+										*/
+DIC_HEADER	JDic_Header[HEADER_NUM];	/* 조사 사전 헤더 */
+DIC_NODE*	JDic_Roots[HEADER_NUM];		/* 조사 사전 버퍼 */
+DIC_HEADER	EDic_Header[HEADER_NUM];	/* 어미 사전 헤더 */
+DIC_NODE*	EDic_Roots[HEADER_NUM];		/* 어미 사전 버퍼 */
+DIC_HEADER	BDic_Header[HEADER_NUM];	/* 보조용언 사전 헤더 */
+DIC_NODE*	BDic_Roots[HEADER_NUM];		/* 보조용언 사전 버퍼 */
+
 DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *result, UWORD *res_idx)
 {
 	UDWORD node_index = 0;  /* 현재 트라이 노드를 가리키는 인덱스 */
@@ -52,7 +66,7 @@ DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 		one_char.j_han.jung = h_word[char_index].j_han.jung;
 		one_char.j_han.jong = 1;
 
-		ret_val = SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (Dic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -103,7 +117,7 @@ DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				if (noun_info_cnt > 0) {
 					noun_info_buf[noun_info_cnt] = 0;
 					result[*res_idx].len = char_index+1;
-					strcpy(result[*res_idx].info, noun_info_buf);
+					strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 					result[(*res_idx)++].jong = TRUE;
 				}
 #endif
@@ -116,7 +130,7 @@ DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 
 	while (remain_chars > 0) {
 		cur_level_start_index = node_index;
-		ret_val = SearchCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (h_word[char_index].j_han.sign == 1 && h_word[char_index].j_han.jong != 1) { 
 				/* node_index가 변하므로 이전 값을 저장해야 한다. */
@@ -142,7 +156,7 @@ DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				}
 
 				node_index = cur_level_start_index;
-				ret_val = SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (Dic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -191,7 +205,7 @@ DWORD SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 						if (noun_info_cnt > 0) {
 							noun_info_buf[noun_info_cnt] = 0;
 							result[*res_idx].len = char_index+1;
-							strcpy(result[*res_idx].info, noun_info_buf);
+							strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 							result[(*res_idx)++].jong = TRUE;
 						}
 #endif
@@ -255,7 +269,7 @@ SKIP_CHECK1:;
 				if (noun_info_cnt > 0) {
 					noun_info_buf[noun_info_cnt] = 0;
 					result[*res_idx].len = char_index+1;
-					strcpy(result[*res_idx].info, noun_info_buf);
+					strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 					result[(*res_idx)++].jong = FALSE;
 				}
 #endif
@@ -299,7 +313,7 @@ SKIP_CHECK1:;
 				}
 
 				node_index = cur_level_start_index;
-				ret_val = SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (Dic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -349,7 +363,7 @@ SKIP_CHECK1:;
 						if (noun_info_cnt > 0) {
 							noun_info_buf[noun_info_cnt] = 0;
 							result[*res_idx].len = char_index+1;
-							strcpy(result[*res_idx].info, noun_info_buf);
+							strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 							result[(*res_idx)++].jong = TRUE;
 						}
 #endif

@@ -9,6 +9,7 @@
  */
 #include <MA_SysHeader.h>
 #include <MA_Type.h>
+#include <MA_Func.h>
 #include <MA_HanType.h>
 #include <MA_ReturnCode.h>
 #include <MADIC_Type.h>
@@ -48,7 +49,7 @@ DWORD dic_size;
 
 DWORD GetCNContent(UDWORD s_idx, UBYTE len, UBYTE *Content)
 {
-    strncpy(Content, &CNDic_Cons[s_idx], len);
+    strncpy((char*)Content, (char*)&CNDic_Cons[s_idx], len);
     Content[len] = '\0';
 
     return 1;
@@ -101,7 +102,7 @@ SearchWordInTrieDicCN(HANGUL *h_word, DWORD len, DWORD h_idx, CNDIC_RESULT *resu
 	}
 
 	while (remain_chars > 0) {
-		ret_val = SearchCharInCurrentLevelCN(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevelCN(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (CNDic_Roots[h_idx][node_index].InfoStart != 0 ||
 				CNDic_Roots[h_idx][node_index].InfoLen != 0) {
@@ -219,7 +220,7 @@ DWORD LoadCNDic(BYTE *dic_dir)
     for (i = 0; i < HEADER_NUM; i++) {
 
 		if(CNDic_Header[i].size <0){
-			printf("CNDic_Header[%d].size:%d\n",CNDic_Header[i].size);
+			printf("CNDic_Header[%d].size:%d\n", i, CNDic_Header[i].size);
 			printf("Error:[DICCN] overflow of CNDic_Header[].size\n");
 			printf("Check the Dictionary version.\n");
 			exit(1);
@@ -228,7 +229,7 @@ DWORD LoadCNDic(BYTE *dic_dir)
 		if (CNDic_Header[i].size != 0) {
 		
 			if(CNDic_Header[i].size>MAX_CNDIC_HEADER_SIZE){
-                printf("CNDic_Header[%d].size:%d\n",CNDic_Header[i].size);
+                printf("CNDic_Header[%d].size:%d\n", i, CNDic_Header[i].size);
                 printf("the limit value of CNDic_Header[].size is %d\n",MAX_CNDIC_HEADER_SIZE);
                 printf("Error:[DICCN]  ");
                 printf("Check the Dictionary version.\n");

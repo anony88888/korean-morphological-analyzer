@@ -31,8 +31,8 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
     DWORD ret_val;
     UBYTE CN_Content[L_BUFLEN]; /* 복합명사 분석 내용 */
     /* 복합명사 기분석 사전에도 동일 어절에 대해서 서로 다른 여러개의 분석 결과가 나올 수 있다. */
-    UBYTE CN_ItemContent[MAX_DUP][S_BUFLEN];
-	UBYTE tmpStr[VS_BUFLEN];
+    //UBYTE CN_ItemContent[MAX_DUP][S_BUFLEN];
+	//UBYTE tmpStr[VS_BUFLEN];
     UWORD DupCnt = 0;
     UWORD MR_num;
     UBYTE *pCont;
@@ -81,7 +81,7 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
 
 	if (*pCont == '_') {
 	    ItemStr[idx] = '\0';
-	    strcpy(CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, ItemStr);
+	    strcpy((char*)CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, (char*)ItemStr);
 	    idx = 0;
 	    pCont++;
 
@@ -117,8 +117,8 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
 			CNMorpRes[MR_num].nMorp=0;
 			for(j = 0; j < CNMorpRes[i].nMorp; j++){
 				if(CNMorpRes[i].MI[j+1].info == 57){
-					sprintf(merge_str,"%s%s",CNMorpRes[i].MI[j].Morpheme,CNMorpRes[i].MI[j+1].Morpheme);
-					strcpy(CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, merge_str);
+					sprintf((char*)merge_str,"%s%s", (char*)CNMorpRes[i].MI[j].Morpheme, (char*)CNMorpRes[i].MI[j+1].Morpheme);
+					strcpy((char*)CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, (char*)merge_str);
 					//품사부여 A:90 B:91 C:92 D:93 E:94
                     if(CNMorpRes[i].MI[j].info=='A'||CNMorpRes[i].MI[j].info=='B'||CNMorpRes[i].MI[j].info=='C'||CNMorpRes[i].MI[j].info=='D'||CNMorpRes[i].MI[j].info=='E')
                         CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].info = 'N';
@@ -128,7 +128,7 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
 					j=j+2;
 					merge_flag--;
 					while(j<CNMorpRes[i].nMorp){
-						strcpy(CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, CNMorpRes[i].MI[j].Morpheme);
+						strcpy((char*)CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
 						CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].info = CNMorpRes[i].MI[j].info;
 						CNMorpRes[MR_num].nMorp++;
 						j++;
@@ -136,7 +136,7 @@ DWORD CheckCompNounWord(HANGUL *hword, UWORD hword_len, UWORD h_idx, tCNMORP_RES
 					//memcpy(&M_CUR_MORPRESULT, &M_PREV_MORPRESULT, sizeof(tMORP_RESULT));
 				}
 				else{
-					strcpy(CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, CNMorpRes[i].MI[j].Morpheme);
+					strcpy((char*)CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
 					CNMorpRes[MR_num].MI[CNMorpRes[MR_num].nMorp].info = CNMorpRes[i].MI[j].info;
 				    CNMorpRes[MR_num].nMorp++;
 				}
@@ -205,7 +205,7 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		case '3':
 		    /* 일반명사, 고유명사 */
 		    /* 1자짜리 명사를 색인어로 등록시켜도 되나? */
-		    strcpy(IDX_words->IDX[i_cnt].str, CNMorpRes[i].MI[j].Morpheme);
+		    strcpy((char*)IDX_words->IDX[i_cnt].str, (char*)CNMorpRes[i].MI[j].Morpheme);
 		    IDX_words->IDX[i_cnt].loc = sPos;
 		    i_cnt++;
 		    break;
@@ -219,8 +219,8 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		    /* 단위명사 */
 		    /* 앞 형태소가 수사이면, 두개를 합쳐서 색인어로 생성 */
 		    if (j > 0 && CNMorpRes[i].MI[j-1].info == '5') {
-			sprintf(IDX_words->IDX[i_cnt].str, "%s%s", CNMorpRes[i].MI[j-1].Morpheme, CNMorpRes[i].MI[j].Morpheme);
-			IDX_words->IDX[i_cnt].loc = sPos- strlen(CNMorpRes[i].MI[j-1].Morpheme);
+			sprintf((char*)IDX_words->IDX[i_cnt].str, "%s%s", (char*)CNMorpRes[i].MI[j-1].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
+			IDX_words->IDX[i_cnt].loc = sPos- strlen((char*)CNMorpRes[i].MI[j-1].Morpheme);
 			i_cnt++;
 		    }
 		    break;
@@ -228,8 +228,8 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		case '5':
 		    /* 수사 */
 		    /* 한자짜리 수사는 색인어가 될 수 없다.(가정) */
-		    if (strlen(CNMorpRes[i].MI[j].Morpheme) > 2) {
-			strcpy(IDX_words->IDX[i_cnt].str, CNMorpRes[i].MI[j].Morpheme);
+		    if (strlen((char*)CNMorpRes[i].MI[j].Morpheme) > 2) {
+			strcpy((char*)IDX_words->IDX[i_cnt].str, (char*)CNMorpRes[i].MI[j].Morpheme);
 			IDX_words->IDX[i_cnt].loc = sPos;
 			i_cnt++;
 		    }
@@ -244,7 +244,7 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		    /* 뒤에 오는 명사와 결합하여 색인어를 생성 */
 		    if (j < CNMorpRes[i].nMorp - 1 && 
 			   (CNMorpRes[i].MI[j+1].info == 'N' || CNMorpRes[i].MI[j+1].info == '3')) {
-			sprintf(IDX_words->IDX[i_cnt].str, "%s%s", CNMorpRes[i].MI[j].Morpheme, CNMorpRes[i].MI[j+1].Morpheme);
+			sprintf((char*)IDX_words->IDX[i_cnt].str, "%s%s", (char*)CNMorpRes[i].MI[j].Morpheme, (char*)CNMorpRes[i].MI[j+1].Morpheme);
 			IDX_words->IDX[i_cnt].loc = sPos;
 			i_cnt++;
 		    }
@@ -259,8 +259,8 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		    /* 접미명사 */
 		    /* 앞 명사와 결합하여 하나의 색인어 생성 */
 		    if (j > 0 && CNMorpRes[i].MI[j-1].info == 'N' || CNMorpRes[i].MI[j-1].info == '3') {
-			sprintf(IDX_words->IDX[i_cnt].str, "%s%s", CNMorpRes[i].MI[j-1].Morpheme, CNMorpRes[i].MI[j].Morpheme);
-			IDX_words->IDX[i_cnt].loc = sPos - strlen(CNMorpRes[i].MI[j-1].Morpheme);
+			sprintf((char*)IDX_words->IDX[i_cnt].str, "%s%s", (char*)CNMorpRes[i].MI[j-1].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
+			IDX_words->IDX[i_cnt].loc = sPos - strlen((char*)CNMorpRes[i].MI[j-1].Morpheme);
 			i_cnt++;
 		    }
 		    break;
@@ -268,7 +268,7 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		    break;
 	    }
 
-	    sPos += strlen(CNMorpRes[i].MI[j].Morpheme);
+	    sPos += strlen((char*)CNMorpRes[i].MI[j].Morpheme);
 	}
 
 	/* 요소명사를 하나로 뭉쳐서 적용 */
@@ -283,7 +283,7 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 		    || CNMorpRes[i].MI[s_ind].info == '9')
 		break;
 	    s_ind++;
-	    sPos = strlen(CNMorpRes[i].MI[s_ind].Morpheme);
+	    sPos = strlen((char*)CNMorpRes[i].MI[s_ind].Morpheme);
 	}
 
 	e_ind = CNMorpRes[i].nMorp - 1;
@@ -300,12 +300,12 @@ DWORD FilterCNIndexWord(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index, INDEX_
 	if (s_ind < e_ind) {
 	    IDX_words->IDX[i_cnt].str[0] = '\0';
 	    for (j = s_ind; j <= e_ind; j++)
-		strcat(IDX_words->IDX[i_cnt].str, CNMorpRes[i].MI[j].Morpheme);
+		strcat((char*)IDX_words->IDX[i_cnt].str, (char*)CNMorpRes[i].MI[j].Morpheme);
 	    IDX_words->IDX[i_cnt].loc = sPos;
 
 	    /* 중복 검사 */
 	    for (j = 0; j < i_cnt; j++)
-		if (!strcmp(IDX_words->IDX[j].str, IDX_words->IDX[i_cnt].str))
+		if (!strcmp((char*)IDX_words->IDX[j].str, (char*)IDX_words->IDX[i_cnt].str))
 		    break;
 
 	    if (j == i_cnt)
@@ -472,7 +472,7 @@ DWORD CNFilterMAResult(ITF_MA_RESULT *ma_result, tCNMORP_RESULT *CNMorpRes, UWOR
     DWORD i, j, k, l, m, index, MR_idx1, MR_idx2;
     BYTE DicInfo[VS_BUFLEN];
     DWORD DicInfoValue;
-    UBYTE han_str[VS_BUFLEN];
+    char/*UBYTE*/ han_str[VS_BUFLEN];
     H_CHAR one_han;
     extern UWORD jo2wan[][3];
 
@@ -480,8 +480,8 @@ DWORD CNFilterMAResult(ITF_MA_RESULT *ma_result, tCNMORP_RESULT *CNMorpRes, UWOR
 	for (i = 0; i < CNMorpRes_Index; i++) {
 	    for (j = 0; j < CNMorpRes[i].nMorp; j++) {
 		DicInfoValue = ConvertCNInfoToNewDicInfo(CNMorpRes[i].MI[j].info, DicInfo);
-		strcpy(ma_result->IMR[i].MI[j].Morpheme, CNMorpRes[i].MI[j].Morpheme);
-		strcpy(ma_result->IMR[i].MI[j].info, DicInfo);
+		strcpy((char*)ma_result->IMR[i].MI[j].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
+		strcpy((char*)ma_result->IMR[i].MI[j].info, (char*)DicInfo);
 	    }
 	    ma_result->IMR[i].nMorp = CNMorpRes[i].nMorp;
 	}
@@ -497,8 +497,8 @@ DWORD CNFilterMAResult(ITF_MA_RESULT *ma_result, tCNMORP_RESULT *CNMorpRes, UWOR
 	for (k = 0; k < M_MORPRESULT_INDEX; k++) {
 	    for (j = 0; j < CNMorpRes[i].nMorp; j++) {
 		DicInfoValue = ConvertCNInfoToNewDicInfo(CNMorpRes[i].MI[j].info, DicInfo);
-		strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, CNMorpRes[i].MI[j].Morpheme);
-		strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].info, DicInfo);
+		strcpy((char*)ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, (char*)CNMorpRes[i].MI[j].Morpheme);
+		strcpy((char*)ma_result->IMR[MR_idx1].MI[MR_idx2].info, (char*)DicInfo);
 		MR_idx2++;
 	    }
 
@@ -522,16 +522,16 @@ DWORD CNFilterMAResult(ITF_MA_RESULT *ma_result, tCNMORP_RESULT *CNMorpRes, UWOR
 
 		if (M_MORPRESULT_MI_NINFO(k, l) == 1) {
 		    if (strlen(M_MORPRESULT_MI_INFO(k, l)) == 1) {
-			strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, han_str);
+			strcpy((char*)ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, (char*)han_str);
 			Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(k, l, 0), DicInfo);
 			strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].info, DicInfo);
 		    } else {
-			strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, han_str);
+			strcpy((char*)ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, (char*)han_str);
 			Convert_StrInfo(M_MORPRESULT_MI_INFO(k, l), DicInfo);
 			strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].info, DicInfo);
 		    }
 		} else {
-		    strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[MR_idx1].MI[MR_idx2].Morpheme, (char*)han_str);
 		    Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(k, l, 0), DicInfo);
 		    strcpy(ma_result->IMR[MR_idx1].MI[MR_idx2].info, DicInfo);
 		    for (m = 1; m < M_MORPRESULT_MI_NINFO(k, l); m++) {

@@ -19,9 +19,9 @@
 
 /* 형태소 분석 결과에 대한 저장은 함수로 만들지 않는다.
    그 이유는 함수 호출에 따른 속도 저하를 막기 위해서     */
-tMORP_RESULT MorpResult[MAX_MORP_LIST];			/* 형태소 분석 결과 저장 버퍼 */
-UWORD MorpResult_Index;							/* 형태소 분석 결과 저장 버퍼 인덱스 */
-UWORD Morpheme_Index;							/* 형태소 인덱스 */
+extern tMORP_RESULT MorpResult[MAX_MORP_LIST];			/* 형태소 분석 결과 저장 버퍼 */
+extern UWORD MorpResult_Index;							/* 형태소 분석 결과 저장 버퍼 인덱스 */
+extern UWORD Morpheme_Index;							/* 형태소 인덱스 */
 
 /* 두가지 중요한 변수를 셋팅한다... */
 /* 이 변수는 미등록어 처리에서만 사용되어야 한다.
@@ -29,9 +29,9 @@ UWORD Morpheme_Index;							/* 형태소 인덱스 */
  * 그렇게 된다면 이 곳에 반드시 표시를 해 두어야 한다.
  */
 /***********************************************/
-UWORD is_HanJa; /* 한자가 포함된 어절인가? */
-UWORD is_AlPha; /* 영어가 포함된 어절인가? */
-UWORD is_DiGit; /* 숫자가 포함된 어절인가? */
+extern UWORD is_HanJa; /* 한자가 포함된 어절인가? */
+extern UWORD is_AlPha; /* 영어가 포함된 어절인가? */
+extern UWORD is_DiGit; /* 숫자가 포함된 어절인가? */
 /***********************************************/
 
 #define M_MORPRESULT_INDEX		MorpResult_Index

@@ -1,7 +1,9 @@
 #include <IDX_common.h>
 #include <IDX_user.h>
+#include <IDX_Hanja2Hangul.h>
 #include <ConvertUTF.h>
 #include <UnicodeBlocks31.h>
+#include <HanjaVariantDef.h>
 #include "hj2hg.h"
 
 int MixedHanjaProc(int code_value, int wordNum, POSTINFO* PostInfo, int hj_opt, int hjvar_opt, int CurrPICnt);
@@ -22,7 +24,7 @@ int IDX_IndexByMixChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	int u8_len;
 	int token_len;
 	int wordNum, i;
-	int code_value;
+	//int code_value;
 
 	extern int StemCheck;
 	extern int StartWordNum;
@@ -32,15 +34,15 @@ int IDX_IndexByMixChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 	wordNum = StartWordNum;
 
-	InitTokenizer(SecVal);
+	InitTokenizer((unsigned char*)SecVal);
 
 	if (HighLight) {
 		wordNum = 0;
 		while ((ret_tok = GetNextTokenChar(token)) != -1) {
-			IDX_UTF32toUTF8(token, 1, u8_tok);
+			IDX_UTF32toUTF8(token, 1, (unsigned char*)u8_tok);
 
-			strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-			PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+			strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
+			PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 			PostInfo[PostInfoCnt].wordNum = wordNum++;
 			PostInfo[PostInfoCnt].psgNum = 0;
 			PostInfo[PostInfoCnt].c_type = ret_tok;
@@ -73,12 +75,12 @@ int IDX_IndexByMixChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_ptr, &(u8_tok[MAXTOKENLEN]), strictConversion, &u8_len);
 				u8_tok[u8_len] = '\0';
 
-				if (strlen(u8_tok) > MAXKEYLEN)
+				if (strlen((char*)u8_tok) > MAXKEYLEN)
 					break;
 
-				strcpy(PostInfo[PostInfoCnt].key, u8_tok);
+				strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
 				strlower(PostInfo[PostInfoCnt].key);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 				PostInfo[PostInfoCnt].wordNum = wordNum++;
 				PostInfo[PostInfoCnt].psgNum = 0;
 				if ( PostInfo[PostInfoCnt].keyLen > MAXKEYLEN )
@@ -113,8 +115,8 @@ int IDX_IndexByMixChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					ConvertUTF32toUTF8(&u32_ptr, &(token[i+1]), &u8_ptr, &(u8_tok[MAXTOKENLEN]), strictConversion, &u8_len);
 					u8_tok[u8_len] = '\0';
 
-					strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-					PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+					strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
+					PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 					PostInfo[PostInfoCnt].wordNum = wordNum++;
 					PostInfo[PostInfoCnt].psgNum = 0;
 					if ( PostInfo[PostInfoCnt].keyLen > MAXKEYLEN )
@@ -150,11 +152,11 @@ int MixedHanjaProc(int code_value, int wordNum, POSTINFO* PostInfo, int hj_opt, 
 	int PostInfoCnt = 0;
 
 	if (hj_opt && GetHangulChars(code_value, hg_buf)) {
-		strcpy(TempVal, hg_buf);
-		ptr = strtok(TempVal, " ");
+		strcpy((char*)TempVal, hg_buf);
+		ptr = (unsigned char*)strtok((char*)TempVal, " ");
 		while (ptr != NULL) {
-			strcpy(PostInfo[PostInfoCnt].key, ptr);
-			PostInfo[PostInfoCnt].keyLen = strlen(ptr);
+			strcpy(PostInfo[PostInfoCnt].key, (char*)ptr);
+			PostInfo[PostInfoCnt].keyLen = strlen((char*)ptr);
 			PostInfo[PostInfoCnt].wordNum = wordNum - 1; 
 			PostInfo[PostInfoCnt].psgNum = 1000; /* 한글변환글자에 대해서는 따로 표시 */
 			PostInfoCnt++;
@@ -163,9 +165,9 @@ int MixedHanjaProc(int code_value, int wordNum, POSTINFO* PostInfo, int hj_opt, 
 				return PostInfoCnt;
 
 			// 현재 글자가 두음법칙이 적용되는지 검사
-			if (DuemConv(ptr, TempVal)) {
-				strcpy(PostInfo[PostInfoCnt].key, TempVal);
-				PostInfo[PostInfoCnt].keyLen = strlen(TempVal);
+			if (DuemConv((char*)ptr, (char*)TempVal)) {
+				strcpy(PostInfo[PostInfoCnt].key, (char*)TempVal);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)TempVal);
 				PostInfo[PostInfoCnt].wordNum = wordNum - 1; 
 				PostInfo[PostInfoCnt].psgNum = 1000; /* 한글변환글자에 대해서는 따로 표시 */
 				PostInfoCnt++;
@@ -173,7 +175,7 @@ int MixedHanjaProc(int code_value, int wordNum, POSTINFO* PostInfo, int hj_opt, 
 					return PostInfoCnt;
 			}
 
-			ptr = strtok(NULL, " ");
+			ptr = (unsigned char*)strtok(NULL, " ");
 		}
 	}
 

@@ -13,7 +13,7 @@
 #include <MA_Jo2Wan.h>
 #include <MA_Interface.h>
 
-DWORD compare_index_str(INDEX_ITEM *, INDEX_ITEM *);
+int compare_index_str(const void *, const void *);
 tVOID Convert_NumInfo(unsigned short int info, char *info_str);
 tVOID Convert_StrInfo(char *info, char *info_str);
 tVOID FilterMAResult(ITF_MA_RESULT *ma_result, tMORP_RESULT *sMorpResult, UWORD sMorpResult_Index);
@@ -58,7 +58,7 @@ DWORD FilterIndexWord(INDEX_WORD *index_words)
 	    }
 	    han_str[ind] = '\0';
 
-	    strcpy(total_index_buf[tib_idx].str, han_str);
+	    strcpy((char*)total_index_buf[tib_idx].str, (char*)han_str);
 	    total_index_buf[tib_idx].loc = 0;
 	    tib_idx++;
 	}
@@ -88,7 +88,7 @@ DWORD FilterIndexWord(INDEX_WORD *index_words)
 
 		han_str[ind] = '\0';
 
-		strcpy(index_buf[ib_idx].str, han_str);
+		strcpy((char*)index_buf[ib_idx].str, (char*)han_str);
 		index_buf[ib_idx].loc = sPos;
 		ib_idx++;
 		sPos += ind;
@@ -141,14 +141,14 @@ DWORD FilterIndexWord(INDEX_WORD *index_words)
 		;
 	    else {
 		for (j = 0; j < ib_idx; j++) {
-		    strcpy(total_index_buf[tib_idx].str, index_buf[j].str);
+		    strcpy((char*)total_index_buf[tib_idx].str, (char*)index_buf[j].str);
 		    total_index_buf[tib_idx].loc = index_buf[j].loc;
 		    tib_idx++;
 		}
 	    }
 	} else {
 	    for (j = 0; j < ib_idx; j++) {
-		strcpy(total_index_buf[tib_idx].str, index_buf[j].str);
+		strcpy((char*)total_index_buf[tib_idx].str, (char*)index_buf[j].str);
 		total_index_buf[tib_idx].loc = index_buf[j].loc;
 		tib_idx++;
 	    }
@@ -156,19 +156,19 @@ DWORD FilterIndexWord(INDEX_WORD *index_words)
     }
     if (tib_idx) {
 	qsort(total_index_buf, tib_idx, sizeof(INDEX_ITEM), compare_index_str);
-	strcpy(temp_index, total_index_buf[0].str);
+	strcpy((char*)temp_index, (char*)total_index_buf[0].str);
 	temp_loc = total_index_buf[0].loc;
 	for (i = 1; i < tib_idx; i++) {
-	    if (strcmp(temp_index, total_index_buf[i].str)) {
-		strcpy(index_words->IDX[index_words->nIndex].str, temp_index);
+	    if (strcmp((char*)temp_index, (char*)total_index_buf[i].str)) {
+		strcpy((char*)index_words->IDX[index_words->nIndex].str, (char*)temp_index);
 		index_words->IDX[index_words->nIndex].loc = temp_loc;
-		strcpy(temp_index, total_index_buf[i].str);
+		strcpy((char*)temp_index, (char*)total_index_buf[i].str);
 		temp_loc = total_index_buf[i].loc;
 		index_words->nIndex++;
 	    }
 	}
 
-	strcpy(index_words->IDX[index_words->nIndex].str, temp_index);
+	strcpy((char*)index_words->IDX[index_words->nIndex].str, (char*)temp_index);
 	index_words->IDX[index_words->nIndex].loc = temp_loc;
 	index_words->nIndex++;
 	return 1;
@@ -177,9 +177,11 @@ DWORD FilterIndexWord(INDEX_WORD *index_words)
 
 }
 
-DWORD compare_index_str(INDEX_ITEM *idx1, INDEX_ITEM *idx2)
+int compare_index_str(const void *p1, const void *p2)
 {
-    return (strcmp(idx1->str, idx2->str));
+	INDEX_ITEM *idx1 = (INDEX_ITEM *)p1;
+	INDEX_ITEM *idx2 = (INDEX_ITEM *)p2;
+    return (strcmp((char*)idx1->str, (char*)idx2->str));
 }
 
 /* flag : 0 -> 표준 출력, 1 -> 파일로 출력 */
@@ -445,22 +447,22 @@ tVOID FilterMAResult(ITF_MA_RESULT *ma_result, tMORP_RESULT *sMorpResult, UWORD 
 
 		    if (sMorpResult[i].MI[j].ninfo == 1) {
 			if (strlen(sMorpResult[i].MI[j].info) == 1) {
-			    strcpy(ma_result->IMR[i].MI[j].Morpheme, han_str);
+			    strcpy((char*)ma_result->IMR[i].MI[j].Morpheme, (char*)han_str);
 			    Convert_NumInfo(sMorpResult[i].MI[j].info[0], info_str);
-			    strcpy(ma_result->IMR[i].MI[j].info, info_str);
+			    strcpy((char*)ma_result->IMR[i].MI[j].info, (char*)info_str);
 			} else {
-			    strcpy(ma_result->IMR[i].MI[j].Morpheme, han_str);
+			    strcpy((char*)ma_result->IMR[i].MI[j].Morpheme, (char*)han_str);
 			    Convert_StrInfo(sMorpResult[i].MI[j].info, info_str);
-			    strcpy(ma_result->IMR[i].MI[j].info, info_str);
+			    strcpy((char*)ma_result->IMR[i].MI[j].info, (char*)info_str);
 			}
 		    } else {
-			strcpy(ma_result->IMR[i].MI[j].Morpheme, han_str);
+			strcpy((char*)ma_result->IMR[i].MI[j].Morpheme, (char*)han_str);
 			Convert_NumInfo(sMorpResult[i].MI[j].info[0], info_str);
-			strcpy(ma_result->IMR[i].MI[j].info, info_str);
+			strcpy((char*)ma_result->IMR[i].MI[j].info, (char*)info_str);
 			for (k = 1; k < sMorpResult[i].MI[j].ninfo; k++) {
 			    Convert_NumInfo(sMorpResult[i].MI[j].info[k], info_str);
-			    strcat(ma_result->IMR[i].MI[j].info, " ");
-			    strcat(ma_result->IMR[i].MI[j].info, info_str);
+			    strcat((char*)ma_result->IMR[i].MI[j].info, " ");
+			    strcat((char*)ma_result->IMR[i].MI[j].info, (char*)info_str);
 			}
 		    }
 		}
@@ -496,16 +498,16 @@ tVOID FilterMAResult(ITF_MA_RESULT *ma_result, tMORP_RESULT *sMorpResult, UWORD 
 
 		if (sMorpResult[0].MI[j].ninfo == 1) {
 		    if (strlen(sMorpResult[0].MI[j].info) == 1) {
-			strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+			strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 			Convert_NumInfo(sMorpResult[0].MI[j].info[0], info_str);
 			strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		    } else {
-			strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+			strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 			Convert_StrInfo(sMorpResult[0].MI[j].info, info_str);
 			strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		    }
 		} else {
-		    strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 		    Convert_NumInfo(sMorpResult[0].MI[j].info[0], info_str);
 		    strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		    for (k = 1; k < sMorpResult[0].MI[j].ninfo; k++) {
@@ -537,16 +539,16 @@ tVOID FilterMAResult(ITF_MA_RESULT *ma_result, tMORP_RESULT *sMorpResult, UWORD 
 	    if (M_MORPRESULT_MI_NINFO(i, j) == 1) {
 		
 		if (strlen(M_MORPRESULT_MI_INFO(i, j)) == 1) {
-		    strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 		    Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
 		    strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		} else {
-		    strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 		    Convert_StrInfo(M_MORPRESULT_MI_INFO(i, j), info_str);
 		    strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		}
 	    } else {
-		strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+		strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
 		Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
 		strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
 		for (k = 1; k < M_MORPRESULT_MI_NINFO(i, j); k++) {
@@ -598,16 +600,16 @@ tVOID Add_MorpResult(ITF_MA_RESULT *ma_result)
 
 	    if (M_MORPRESULT_MI_NINFO(i, j) == 1) {
 		if (strlen(M_MORPRESULT_MI_INFO(i, j)) == 1) {
-		    strcpy(ma_result->IMR[sIdx].MI[j].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[sIdx].MI[j].Morpheme, (char*)han_str);
 		    Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
 		    strcpy(ma_result->IMR[sIdx].MI[j].info, info_str);
 		} else {
-		    strcpy(ma_result->IMR[sIdx].MI[j].Morpheme, han_str);
+		    strcpy((char*)ma_result->IMR[sIdx].MI[j].Morpheme, (char*)han_str);
 		    Convert_StrInfo(M_MORPRESULT_MI_INFO(i, j), info_str);
 		    strcpy(ma_result->IMR[sIdx].MI[j].info, info_str);
 		}
 	    } else {
-		strcpy(ma_result->IMR[sIdx].MI[j].Morpheme, han_str);
+		strcpy((char*)ma_result->IMR[sIdx].MI[j].Morpheme, (char*)han_str);
 		Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
 		strcpy(ma_result->IMR[sIdx].MI[j].info, info_str);
 		for (k = 1; k < M_MORPRESULT_MI_NINFO(i, j); k++) {

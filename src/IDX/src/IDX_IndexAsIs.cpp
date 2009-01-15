@@ -52,7 +52,7 @@ int RangeIndex(char *SecVal, POSTINFO *PostInfo)
 
 	unsigned char Buf[MAXTEMPBUFSIZE];
 
-	IDX_UTF8toUTF32(SecVal, utf32_val, &utf32_len);
+	IDX_UTF8toUTF32((unsigned char*)SecVal, utf32_val, &utf32_len);
 	for (i = 0; i < off_num; i++) {
 		start = idx_offsets[i].start;
 		len = idx_offsets[i].len;
@@ -61,14 +61,14 @@ int RangeIndex(char *SecVal, POSTINFO *PostInfo)
 
 		IDX_UTF32toUTF8(&utf32_val[start], len, Buf);
 
-		PostInfo[PostInfoNum].keyLen = strlen(Buf);
+		PostInfo[PostInfoNum].keyLen = strlen((char*)Buf);
 		if (PostInfo[PostInfoNum].keyLen > 0) {
 			if (PostInfo[PostInfoNum].keyLen >= MAXKEYLEN) {
-				strncpy(PostInfo[PostInfoNum].key, Buf, MAXKEYLEN - 1);
+				strncpy(PostInfo[PostInfoNum].key, (char*)Buf, MAXKEYLEN - 1);
 				PostInfo[PostInfoNum].keyLen = MAXKEYLEN - 1;
 				PostInfo[PostInfoNum].key[MAXKEYLEN - 1] = '\0';
 			} else 
-				strcpy(PostInfo[PostInfoNum].key, Buf);
+				strcpy(PostInfo[PostInfoNum].key, (char*)Buf);
 
 			strlower(PostInfo[PostInfoNum].key);
 			PostInfo[PostInfoNum].psgNum = 0;
@@ -103,7 +103,7 @@ int IDX_IndexAsIs(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	/* "한자는 그대로" 플래그가 세팅되지 않으면 한글로 변환 */
 	/* 수정 : 한자 플래그가 1이면 한글로 변환 */
 	if (HanjaFlag == 1) {
-		Hanja2Hangul_UTF8(SecVal, TempSecVal);
+		Hanja2Hangul_UTF8((unsigned char*)SecVal, (unsigned char*)TempSecVal);
 
 		PostInfo[0].keyLen = strlen(TempSecVal);
 		if (PostInfo[0].keyLen > 0) {

@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libIDX", "libIDX.vcproj", "{D0F8228A-539C-4A49-9BC0-322C1B269778}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample", "test\sample.vcproj", "{AB0A5F9A-E76E-43DF-A128-79AEC16ABA33}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0F8228A-539C-4A49-9BC0-322C1B269778} = {D0F8228A-539C-4A49-9BC0-322C1B269778}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0F8228A-539C-4A49-9BC0-322C1B269778}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D0F8228A-539C-4A49-9BC0-322C1B269778}.Debug|Win32.Build.0 = Debug|Win32
+		{D0F8228A-539C-4A49-9BC0-322C1B269778}.Release|Win32.ActiveCfg = Release|Win32
+		{D0F8228A-539C-4A49-9BC0-322C1B269778}.Release|Win32.Build.0 = Release|Win32
+		{AB0A5F9A-E76E-43DF-A128-79AEC16ABA33}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB0A5F9A-E76E-43DF-A128-79AEC16ABA33}.Debug|Win32.Build.0 = Debug|Win32
+		{AB0A5F9A-E76E-43DF-A128-79AEC16ABA33}.Release|Win32.ActiveCfg = Release|Win32
+		{AB0A5F9A-E76E-43DF-A128-79AEC16ABA33}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

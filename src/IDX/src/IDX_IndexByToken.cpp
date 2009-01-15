@@ -3,6 +3,7 @@
 #include <ConvertUTF.h>
 #include <UnicodeBlocks31.h>
 
+int RemoveDCode(char *data);
 
 /*
  * 색인 타입 : INDEX_BY_TOKEN
@@ -46,7 +47,7 @@ int IDX_IndexByToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 					u8_str[u8str_len] = '\0';
 
-					RemoveDCode(u8_str);
+					RemoveDCode((char *)u8_str);
 
 					strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 					PostInfo[PostInfoCnt].keyLen = u8str_len;
@@ -63,10 +64,10 @@ int IDX_IndexByToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 					u8_str[u8str_len] = '\0';
 
-					if (IDX_FindStopWord(u8_str)) 
+					if (IDX_FindStopWord((char *)u8_str)) 
 						break;
 
-					RemoveDCode(u8_str);
+					RemoveDCode((char *)u8_str);
 
 					strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 					PostInfo[PostInfoCnt].keyLen = u8str_len;
@@ -110,10 +111,10 @@ int IDX_IndexByToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					u8_str[u8str_len] = '\0';
 				}
 
-				if (IDX_FindStopWord(u8_str)) 
+				if (IDX_FindStopWord((char *)u8_str)) 
 					break;
 
-				RemoveDCode(u8_str);
+				RemoveDCode((char *)u8_str);
 
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 				//if (ret_tok == T_LAT) 

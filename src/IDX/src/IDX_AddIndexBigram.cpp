@@ -6,15 +6,15 @@
 
 int IDX_AddIndexBigram(POSTINFO *PostInfo, int OrgPostCnt)
 {
-	int				PostInfoCnt = OrgPostCnt;
-	int				i, j;
+	int	PostInfoCnt = OrgPostCnt;
+	int	i, j;
+	int PrevWordPos[MAX_PSG_CANDIDATE_NUM];
+	int prevWordPosCnt;
 
 	// PostInfoCnt == 1이면 더이상 처리할 필요 없음.
 	if (OrgPostCnt <2) return PostInfoCnt;
 
 	// 이전 단어의 군... : PostInfo의 위치를 저장한다.
-	int PrevWordPos[MAX_PSG_CANDIDATE_NUM];
-	int prevWordPosCnt;
 	PrevWordPos[0] = 0;
 	prevWordPosCnt=1;
 

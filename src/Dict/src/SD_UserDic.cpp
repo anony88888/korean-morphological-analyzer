@@ -186,7 +186,7 @@ WORD UD_InsertWord(BYTE *word, BYTE info)
 	UWORD header_idx;
 	DWORD voca_len;
 
-	voca_len = MakeHanBuf(word, voca, &header_idx);
+	voca_len = MakeHanBuf((UBYTE*)word, voca, &header_idx);
 
 	if (voca_len == 0)
 		return 0;
@@ -224,7 +224,7 @@ DWORD UD_InsertWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, BYTE info)
 		return char_index;		/* 한글 스트링의 길이 만큼 리턴 */
 	} else {
 		while (remain_chars > 0) {
-			ret_val = UD_SearchCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+			ret_val = UD_SearchCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 			if (ret_val == 1) {
 				if (UserDic_Roots[h_idx][node_index].node_info.next == 0) {
 					if (remain_chars == 1) {
@@ -470,7 +470,7 @@ DWORD UD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT 
 		one_char.j_han.jung = h_word[char_index].j_han.jung;
 		one_char.j_han.jong = 1;
 
-		ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+		ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (UserDic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -521,7 +521,7 @@ DWORD UD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT 
 				if (noun_info_cnt > 0) {
 					noun_info_buf[noun_info_cnt] = 0;
 					result[*res_idx].len = char_index+1;
-					strcpy(result[*res_idx].info, noun_info_buf);
+					strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 					result[(*res_idx)++].jong = TRUE;
 				}
 #endif
@@ -534,7 +534,7 @@ DWORD UD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT 
 
 	while (remain_chars > 0) {
 		cur_level_start_index = node_index;
-		ret_val = UD_SearchCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = UD_SearchCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (h_word[char_index].j_han.sign == 1 && h_word[char_index].j_han.jong != 1) { 
 				/* node_index가 변하므로 이전 값을 저장해야 한다. */
@@ -560,7 +560,7 @@ DWORD UD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT 
 				}
 
 				node_index = cur_level_start_index;
-				ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (UserDic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -609,7 +609,7 @@ DWORD UD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT 
 						if (noun_info_cnt > 0) {
 							noun_info_buf[noun_info_cnt] = 0;
 							result[*res_idx].len = char_index+1;
-							strcpy(result[*res_idx].info, noun_info_buf);
+							strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 							result[(*res_idx)++].jong = TRUE;
 						}
 #endif
@@ -673,7 +673,7 @@ SKIP_CHECK1:;
 				if (noun_info_cnt > 0) {
 					noun_info_buf[noun_info_cnt] = 0;
 					result[*res_idx].len = char_index+1;
-					strcpy(result[*res_idx].info, noun_info_buf);
+					strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 					result[(*res_idx)++].jong = FALSE;
 				}
 #endif
@@ -716,7 +716,7 @@ SKIP_CHECK1:;
 				}
 
 				node_index = cur_level_start_index;
-				ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = UD_SearchCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (UserDic_Roots[h_idx][node_index].node_info.info != 0) {
 #ifdef MULTI_DIC_INFO
@@ -766,7 +766,7 @@ SKIP_CHECK1:;
 						if (noun_info_cnt > 0) {
 							noun_info_buf[noun_info_cnt] = 0;
 							result[*res_idx].len = char_index+1;
-							strcpy(result[*res_idx].info, noun_info_buf);
+							strcpy((char*)result[*res_idx].info, (char*)noun_info_buf);
 							result[(*res_idx)++].jong = TRUE;
 						}
 #endif

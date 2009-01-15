@@ -6,6 +6,9 @@
 #include "hj2hg.h"
 #include <HanjaVariantDef.h>
 #include <IDX_Hanja2Hangul.h>
+#include <assert.h>
+
+int IDX_PrevToken(int idx);
 
 /*
  * 2003-05-28, 색인 유형 추가
@@ -16,19 +19,19 @@
 int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 {
 	int		ret_tok, PostInfoCnt = 0, tempPostInfoCnt, org_PostInfoCnt;
-	UTF32	token[MAXTOKENLEN], u32_str[MAXTOKENLEN], *u32_ptr;
-	UTF8	u8_str[MAXTOKENLEN], *u8_start_ptr, *u8_end_ptr, *u8_ptr, u8_tok[MAXTOKENLEN];
-	UTF8    original_word[MAXTOKENLEN];
+	UTF32	token[MAXTOKENLEN+1], u32_str[MAXTOKENLEN+1], *u32_ptr;
+	UTF8	u8_str[MAXTOKENLEN+1], *u8_start_ptr, *u8_end_ptr, *u8_ptr, u8_tok[MAXTOKENLEN+1];
+	UTF8    original_word[MAXTOKENLEN+1];
 	int		u8str_len, u8_len;
 	int		token_len;
-	JO_CHAR	j_hanstr[MAXTOKENLEN];
+	JO_CHAR	j_hanstr[MAXTOKENLEN+1];
 	int		j_hanstr_len;
 	int		idx_num, i, j, k;
 	JO_INDEX_WORD idx_words;
 	ConversionResult cnvt_res;
 	int		wordNum = 1, max_wordNum = 0, org_wordNum;
 	int		old_psgNum, firstFlag = 1;
-	unsigned char TempVal[512], *ptr;
+	/*unsigned*/ char TempVal[512], *ptr;
 	char 	hg_buf[1024];
 
 	extern int StemCheck;
@@ -64,10 +67,10 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					continue;
 
 				/* 불용어 제거 */
-				if (IDX_FindStopWord(u8_str))
+				if (IDX_FindStopWord((char*)u8_str))
 					continue;
 
-				strcpy(original_word, u8_str);
+				strcpy((char*)original_word, (char*)u8_str);
 
 				/* UCS4 --> Johab */
 				j_hanstr_len = 0;
@@ -114,7 +117,7 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 						 */
 						if (idx_words.IDX[j].str_len >= 2 && idx_words.nIndex == 1) {
 						/* 불용어 제거 */
-						    if (IDX_FindStopWord(u8_str))
+						    if (IDX_FindStopWord((char*)u8_str))
 						        continue;
 						}
 
@@ -149,11 +152,11 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					// 워드 자체도 색인어로 지정(2005/02/14)
 					/////////////////////////////////////////////////////////////////
 					for (k = org_PostInfoCnt; k < PostInfoCnt; k++)
-						if (!strcmp(original_word, PostInfo[k].key))
+						if (!strcmp((char *)original_word, PostInfo[k].key))
 							break;
 					if (k == PostInfoCnt) {
 						strcpy(PostInfo[PostInfoCnt].key, (char *) original_word);
-						PostInfo[PostInfoCnt].keyLen = strlen(original_word);
+						PostInfo[PostInfoCnt].keyLen = strlen((char *)original_word);
 						PostInfo[PostInfoCnt].psgNum = 7777;
 						PostInfo[PostInfoCnt].wordNum = org_wordNum;
 						if (org_PostInfoCnt == PostInfoCnt) // 색인어가 없는 어절...
@@ -173,8 +176,8 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					ConvertUTF32toUTF8(&u32_ptr, &(token[i+1]), &u8_ptr, &(u8_tok[MAXTOKENLEN]), strictConversion, &u8_len);
 					u8_tok[u8_len] = '\0';
 
-					strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-					PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+					strcpy(PostInfo[PostInfoCnt].key, (char *)u8_tok);
+					PostInfo[PostInfoCnt].keyLen = strlen((char *)u8_tok);
 					PostInfo[PostInfoCnt].wordNum = wordNum++;
 					PostInfo[PostInfoCnt].psgNum = 0;
 					if ( PostInfo[PostInfoCnt].keyLen > MAXKEYLEN )
@@ -194,16 +197,16 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					*/
 						if (GetHangulChars(token[i], hg_buf)) {
 						//strcpy(TempVal, Hj2Hg_Table[token[i]-INIT_HANJA_CODE]);
-						strcpy(TempVal, hg_buf);
-						ptr = strtok(TempVal, " ");
+						strcpy((char*)TempVal, hg_buf);
+						ptr = strtok((char*)TempVal, " ");
 						while (ptr != NULL) {
-							strcpy(PostInfo[PostInfoCnt].key, ptr);
-							PostInfo[PostInfoCnt].keyLen = strlen(ptr);
+							strcpy(PostInfo[PostInfoCnt].key, (char*)ptr);
+							PostInfo[PostInfoCnt].keyLen = strlen((char*)ptr);
 							PostInfo[PostInfoCnt].wordNum = wordNum - 1;
 							PostInfo[PostInfoCnt].psgNum = 1000; /* 한글변환글자에 대해서는 따로 정보표시 */
 							PostInfoCnt++;
 
-							if (DuemConv(ptr, TempVal)) {
+							if (DuemConv((char*)ptr, (char*)TempVal)) {
 								strcpy(PostInfo[PostInfoCnt].key, TempVal);
 								PostInfo[PostInfoCnt].keyLen = strlen(TempVal);
 								PostInfo[PostInfoCnt].wordNum = wordNum - 1;
@@ -257,14 +260,14 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				*/
 				
 				/* 불용어 제거 */
-				if (IDX_FindStopWord(u8_str))
+				if (IDX_FindStopWord((char *)u8_str))
 					continue;
 
-				if (strlen(u8_str) > MAXKEYLEN)
+				if (strlen((char *)u8_str) > MAXKEYLEN)
 					continue;
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 				PostInfo[PostInfoCnt].psgNum = 1;
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_str);
+				PostInfo[PostInfoCnt].keyLen = strlen((char *)u8_str);
 				PostInfo[PostInfoCnt].wordNum = wordNum++;
 
 				PostInfoCnt++;
@@ -284,9 +287,9 @@ int IDX_IndexByMixMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				u8_str[u8str_len] = '\0';
 				*/
 				/* 불용어 제거 */
-				if (IDX_FindStopWord(u8_str))
+				if (IDX_FindStopWord((char *)u8_str))
 					continue;
-				if (strlen(u8_str) > MAXKEYLEN)
+				if (strlen((char *)u8_str) > MAXKEYLEN)
 					continue;
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 

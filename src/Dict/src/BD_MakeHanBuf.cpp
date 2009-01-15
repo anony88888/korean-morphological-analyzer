@@ -87,6 +87,12 @@ DWORD Wan2Jo(UBYTE *str, HANGUL *han_buf)
 	return han_len;
 }
 
+#ifdef MA_MODE
+UWORD is_HanJa;
+UWORD is_AlPha;
+UWORD is_DiGit;
+#endif
+
 DWORD MakeHanBuf(UBYTE *hangul_str, HANGUL *han_buf, UWORD *head_idx)
 {
 	H_CHAR han_char;	/* 한글 한글자 */
@@ -96,12 +102,6 @@ DWORD MakeHanBuf(UBYTE *hangul_str, HANGUL *han_buf, UWORD *head_idx)
 	WORD code_index;
 #ifdef HANJA_RETURN
 	DWORD is_hanja = 0;
-#endif
-
-#ifdef MA_MODE
-	extern UWORD is_HanJa;
-	extern UWORD is_AlPha;
-	extern UWORD is_DiGit;
 #endif
 
 #ifdef MA_MODE

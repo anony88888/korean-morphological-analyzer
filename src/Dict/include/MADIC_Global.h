@@ -43,26 +43,26 @@
 
 #define HEADER_NUM (WANSUNG_JASO_NUM + WANSUNG_CODE_NUM + ALPHABET_CODE_NUM + NUMBER_NUM)
 
-DIC_HEADER Dic_Header[HEADER_NUM]; 
+extern DIC_HEADER Dic_Header[HEADER_NUM]; 
 /*
    The Header Information for positioning the cursor according to hangul code 
    This information is the location where nodes of each hangul code exists 
 */
 
-DIC_NODE *Dic_Roots[HEADER_NUM];
+extern DIC_NODE *Dic_Roots[HEADER_NUM];
 /*
    The root nodes --> 51+2350 wansung hangul code
 */
-WORD full_match;
+extern WORD full_match;
 
-DIC_HEADER JDic_Header[HEADER_NUM];		/* 조사 사전 헤더 */
-DIC_NODE *JDic_Roots[HEADER_NUM];		/* 조사 사전 버퍼 */
+extern DIC_HEADER JDic_Header[HEADER_NUM];		/* 조사 사전 헤더 */
+extern DIC_NODE *JDic_Roots[HEADER_NUM];		/* 조사 사전 버퍼 */
 
-DIC_HEADER EDic_Header[HEADER_NUM];		/* 어미 사전 헤더 */
-DIC_NODE *EDic_Roots[HEADER_NUM];		/* 어미 사전 버퍼 */
+extern DIC_HEADER EDic_Header[HEADER_NUM];		/* 어미 사전 헤더 */
+extern DIC_NODE *EDic_Roots[HEADER_NUM];		/* 어미 사전 버퍼 */
 
-DIC_HEADER BDic_Header[HEADER_NUM];		/* 보조용언 사전 헤더 */
-DIC_NODE *BDic_Roots[HEADER_NUM];		/* 보조용언 사전 버퍼 */
+extern DIC_HEADER BDic_Header[HEADER_NUM];		/* 보조용언 사전 헤더 */
+extern DIC_NODE *BDic_Roots[HEADER_NUM];		/* 보조용언 사전 버퍼 */
 
 /* DIC_HEADER Tail_Dic_Header[HEADER_NUM]; */		/* 말뭉치에서 추출한 Tail 패턴 사전 헤더 */
 /* TAIL_DIC_NODE *Tail_Dic_Roots[HEADER_NUM]; */		/* 말뭉치에서 추출한 Tail 패턴 사전 버퍼 */

@@ -19,6 +19,8 @@
 #include <MADIC_DicInfo.h>
 #include <MADIC_Func.h>
 
+#include <boost/scoped_array.hpp>
+
 #define MAX_CN_RESULT		50 /* 복합명사 분석에서 나오는 형태소 분석 결과는 최대 50개 */
 
 /*
@@ -33,15 +35,15 @@ DWORD comp_time;
 DWORD CheckCompNoun(HANGUL *h_word, UWORD h_word_len, HANGUL pre_char, UWORD info)
 {
 	DWORD i, j, k,l;
-	DWORD chk_93_info_idx;
+	//DWORD chk_93_info_idx;
 	UWORD h_idx;
 	DWORD ret_val, new_idx;
 	extern UWORD jo2wan[][3];
 	DWORD cnt;
 	DWORD DAdj[100][20];
 	tSTACK comp_stack[100];
-	tSTACK Ns93_stack[100];
-	DWORD Ns93_idx;
+	//tSTACK Ns93_stack[100];
+	//DWORD Ns93_idx;
 	DWORD cs_idx;
 	DWORD vert_idx, cur_node, cur_level;
 	DWORD pre_Morpheme_Index, pre_MorpResult_Index, pre_CUR_MAR_ITEMS;
@@ -49,7 +51,7 @@ DWORD CheckCompNoun(HANGUL *h_word, UWORD h_word_len, HANGUL pre_char, UWORD inf
 	HANGUL tmpHan, tmp_h_word[VS_BUFLEN];
 	UWORD cur_char_pos, sub_idx, chk_jong;
 	UWORD chk_33_info, chk_34_info;
-	DWORD add_level;
+	//DWORD add_level;
 #ifdef MULTI_DIC_INFO
 	JEDIC_RESULT jdic_result[VS_BUFLEN];
 #else
@@ -67,15 +69,17 @@ DWORD CheckCompNoun(HANGUL *h_word, UWORD h_word_len, HANGUL pre_char, UWORD inf
 
 	DIC_RESULT DRES[DIC_RESULT_NUM];
 	UWORD DRES_idx = 0;
-	struct {
+	struct F_DRES_t {
 	     CDIC_RESULT dic_result[DIC_RESULT_NUM];
 	     UWORD dic_res_idx;
-	} F_DRES[50];
+	};
+	boost::scoped_array<F_DRES_t>  F_DRES( new F_DRES_t[50] );
 	DWORD fdr_idx = 0;
-	struct {
+	struct VERTEX_t {
 	     CDIC_RESULT dic_result;
 	     UWORD start_idx;
-	} VERTEX[100];
+	};
+	boost::scoped_array<VERTEX_t> VERTEX( new VERTEX_t[100] );
 	DWORD vt_idx = 0;
 
 	/*

@@ -10,6 +10,9 @@
  * 작성자 : 최성필
  * 작성일 : 2003-04-11
  */
+
+#ifdef CD_PROC
+
 #include <IDX_common.h>
 #include <IDX_user.h>
 #include <MA_ShmOP.h>
@@ -501,3 +504,5 @@ int GetTermInfo(char *line, TERM *OneTerm, TERM_INFO *TermInfo, int *TermInfoNum
 
 	return 1;
 }
+
+#endif

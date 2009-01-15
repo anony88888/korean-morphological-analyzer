@@ -10,8 +10,10 @@
 #include <MA_SysHeader.h>
 #include <MA_Type.h>
 #include <MA_HanType.h>
+#include <MA_Func.h>
 #include <MADIC_Type.h>
 #include <MADIC_Global.h>
+#include <MADIC_Func.h>
 
 #ifdef MADLL_EXPORTS
 DLLMA_API tVOID InitDicHeader()

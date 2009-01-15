@@ -17,7 +17,7 @@ typedef struct {
 		UDWORD item_num;
 } tMEMORY_HEADER;
 
-DWORD Total_MemAlloc_Bytes;		/* 현재 할당된 메모리의 크기 */
+extern DWORD Total_MemAlloc_Bytes;		/* 현재 할당된 메모리의 크기 */
 
 #define Memory_Header(block)	(((tMEMORY_HEADER *)(block))-1)
 #define Memory_Bytes(block)		((UDWORD)(((block) == NULL) ? 0 : \

@@ -1,6 +1,7 @@
 #include <MA_SysHeader.h>
 #include <MA_Type.h>
 #include <MA_Hash.h>
+#include <MA_Func.h>
 
 static tDATUMINFO *_HashTable[HASHTABLESIZE];
 static UDWORD *HashValueTable;
@@ -49,7 +50,7 @@ DWORD LoadCorpusDic(FILE *fd_cordic)
  *   */
 tVOID *FindCorpusDic(UBYTE *key)
 {
-    UDWORD hash_val = hash(key, strlen(key));
+    UDWORD hash_val = hash(key, strlen((const char*)key));
     tHASHITEM *cur_item;
     int i;
 
@@ -62,7 +63,7 @@ tVOID *FindCorpusDic(UBYTE *key)
 
     cur_item = _HashTable[hash_val]->Item;
     for (i = 0; i < _HashTable[hash_val]->Item_num; i++) {
-	if (!strcmp(cur_item[i].key, key))
+	if (!strcmp((char*)cur_item[i].key, (char*)key))
 	    return (tVOID *) cur_item[i].data;
     }
 

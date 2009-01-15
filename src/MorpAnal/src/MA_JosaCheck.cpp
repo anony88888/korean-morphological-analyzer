@@ -24,7 +24,7 @@ DWORD CheckJosa(HANGUL *h_word, UWORD j_pos, UWORD jong)
 		key.center = 0;		/* code의 0번째 위치에 검색할 글자가 들어감 */
 		key.code[0] = h_word[j_pos].j_code;
 
-		ret = bsearch(&key, JosaConst, JOSACONST_NUM, sizeof(tCONST_RULE), compare_code0);
+		ret = (tCONST_RULE *)bsearch(&key, JosaConst, JOSACONST_NUM, sizeof(tCONST_RULE), compare_code0);
 		if (ret != NULL) {
 			switch (ret->rule) {
 			case NO_JONG :		/* 이전 글자에 종성이 없어야 함... */
@@ -58,7 +58,7 @@ CheckJosaUnknown(HANGUL *h_word, UWORD j_pos, UWORD jong)
 		key.center = 0;		/* code의 0번째 위치에 검색할 글자가 들어감 */
 		key.code[0] = h_word[j_pos].j_code;
 
-		ret = bsearch(&key, JosaConst, JOSACONST_NUM, sizeof(tCONST_RULE), compare_code0);
+		ret = (tCONST_RULE *)bsearch(&key, JosaConst, JOSACONST_NUM, sizeof(tCONST_RULE), compare_code0);
 		if (ret != NULL) {
 			switch (ret->rule) {
 			case NO_JONG :		/* 이전 글자에 종성이 없어야 함... */

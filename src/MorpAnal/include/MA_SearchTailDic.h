@@ -10,4 +10,11 @@ typedef struct {
 	BYTE Tag[VS_BUFLEN];
 } MORPHEME;
 
+tVOID InitTAILDicHeader();
+DWORD LoadTAILDic(BYTE *dic_dir);
+DWORD ClearTAILDic();
+DWORD GetTAILContent(UDWORD s_idx, UBYTE len, UBYTE *Content, UWORD mode);
+DWORD SearchTAILDic(HANGUL *h_word, UWORD h_word_len, DWORD h_idx
+				, TAILDIC_RESULT *result, UWORD *res_idx, UWORD mode);
+
 #endif /* _MA_SEARCHTAILDIC_H_ */

@@ -15,6 +15,8 @@
 #include <MA_Memory.h>
 #include <MA_UtilLib.h>
 
+DWORD Total_MemAlloc_Bytes;		/* 현재 할당된 메모리의 크기 */
+
 tMEMORY * MemoryCreate(UDWORD bytes, DWORD mode)
 {
 	tMEMORY_HEADER *header;		/* 메모리 헤더 */

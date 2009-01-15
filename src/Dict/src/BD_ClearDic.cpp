@@ -9,6 +9,7 @@
  */
 #include <MA_SysHeader.h>
 #include <MA_Type.h>
+#include <MA_Func.h>
 #include <MA_GMacro.h>
 #include <MA_ReturnCode.h>
 #include <MA_HanType.h>
@@ -16,6 +17,7 @@
 #include <MADIC_Global.h>
 #include <MADIC_Func.h>
 #include <MA_UtilLib.h>
+#include <MA_SearchTailDic.h>
 
 #ifdef SHARED_MEMORY_DIC
 #include <MA_ShmOP.h>

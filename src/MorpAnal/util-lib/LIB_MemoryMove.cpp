@@ -24,8 +24,8 @@ tMEMORY* MemoryMove(tMEMORY *dest, tMEMORY *src, UDWORD size)
 	assert(src != NULL);
 	assert(dest != NULL);
 
-	src_p = src;
-	dest_p = dest;
+	src_p = (BYTE *)src;
+	dest_p = (BYTE *)dest;
 	if (dest > src) {
 		src_p += size;
 		dest_p += size;

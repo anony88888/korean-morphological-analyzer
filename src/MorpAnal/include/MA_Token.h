@@ -54,7 +54,7 @@ static BYTE SentMark[] = "!\"'(),.:;?";
 #define ENG_WORD		137	/* 알파벳으로 구성된 토큰 */
 
 /* 내부 버퍼 포인터 */
-UBYTE *pBufferMA;
+//UBYTE *pBufferMA;
 
 #endif
 

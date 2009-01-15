@@ -41,7 +41,7 @@ int IDX_IndexByCDToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				/* "한자는 그대로" 플래그가 세팅되지 않으면 한글로 변환 */
 				/* 한자 플래그 1 --> 변환 */
 				if (HanjaFlag == 1) {
-					Hanja2Hangul_UCS4((int *)token, token_len, (int *)hconv_tok);
+					Hanja2Hangul_UCS4((UTF32 *)token, token_len, (UTF32 *)hconv_tok);
 
 					/* UCS4 --> UTF-8 */
 					u32_ptr = hconv_tok;
@@ -64,7 +64,7 @@ int IDX_IndexByCDToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					cnvt_res = ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_start_ptr, u8_end_ptr, strictConversion, &u8str_len);
 
 					u8_str[u8str_len] = '\0';
-					if (IDX_FindStopWord(u8_str)) 
+					if (IDX_FindStopWord((char *)u8_str)) 
 						break;
 					strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 					PostInfo[PostInfoCnt].keyLen = u8str_len;
@@ -89,7 +89,7 @@ int IDX_IndexByCDToken(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				cnvt_res = ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_start_ptr, u8_end_ptr, strictConversion, &u8str_len);
 
 				u8_str[u8str_len] = '\0';
-				if (IDX_FindStopWord(u8_str)) 
+				if (IDX_FindStopWord((char *)u8_str)) 
 					break;
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
 				if (ret_tok == T_LAT) 

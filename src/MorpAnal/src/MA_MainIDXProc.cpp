@@ -26,18 +26,25 @@
 
 #define MAX_INPUT_WORD_LEN		40
 
+tMORP_RESULT MorpResult[MAX_MORP_LIST];			/* 형태소 분석 결과 저장 버퍼 */
+UWORD MorpResult_Index;							/* 형태소 분석 결과 저장 버퍼 인덱스 */
+UWORD Morpheme_Index;							/* 형태소 인덱스 */
+
 /* 수사 형태소 분석 결과 저장 버퍼 */
 static tMORP_RESULT SusaMorpResult[MAX_MORP_LIST];
 static UWORD SusaMorpResult_Index = 0;
 static eIDX_RESULT curloc_eIDX[50];
 
-
-DWORD GetIndexFromOneWord(JO_CHAR *han_word, int hword_len, JO_INDEX_WORD *idx_words, int mode);
+int GetIndexFromOneWord(JO_CHAR *han_word, int hword_len, JO_INDEX_WORD *idx_words, int mode);
 DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len);
 DWORD CopyCNMAResultToMorpResult(tCNMORP_RESULT *CNMorpRes, UWORD CNMorpRes_Index);
 DWORD CopyITFMAResultToMorpResult(ITF_MA_RESULT ma_res);
 DWORD CompJStr(JO_CHAR *s1, DWORD s1_len, JO_CHAR *s2, DWORD s2_len);
 DWORD CheckJohabStr(JO_CHAR *han_word, DWORD hword_len);
+
+DWORD FilterJOIndexWord(JO_INDEX_WORD *idx_words);
+
+DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_result);
 
 /*
  * GetIndexFromOneWord -- 한 단어에서 색인어 추출(조합형 입력)
@@ -48,9 +55,9 @@ DWORD CheckJohabStr(JO_CHAR *han_word, DWORD hword_len);
  * Output
  * 		- 조합형으로 이뤄진 색인결과
  */
-DWORD GetIndexFromOneWord(JO_CHAR *han_word, int hword_len, JO_INDEX_WORD *idx_words, int mode)
+int GetIndexFromOneWord(JO_CHAR *han_word, int hword_len, JO_INDEX_WORD *idx_words, int mode)
 {
-	DWORD ret_val;
+	DWORD ret_val = 0;
 
 	SusaMorpResult_Index = 0;
 	if (hword_len > MAX_INPUT_WORD_LEN)
@@ -65,9 +72,9 @@ DWORD GetIndexFromOneWord(JO_CHAR *han_word, int hword_len, JO_INDEX_WORD *idx_w
 //		printf("CheckJohabStr:ret_val=%d\n",ret_val);
 	if (ret_val == 0)
 		return 0;
-	//printf("[debug]MorpAnal_J 호출전\n");
+//	printf("[debug]MorpAnal_J 호출전\n");
 	ret_val = MorpAnal_J(han_word, hword_len);
-	//printf("[debug]MorpAnal_J 호출후\n");
+//	printf("[debug]MorpAnal_J 호출후\n");
 		 
 	if (ret_val)
 		FilterJOIndexWord(idx_words);
@@ -610,9 +617,7 @@ DWORD CompJStr(JO_CHAR *s1, DWORD s1_len, JO_CHAR *s2, DWORD s2_len)
 DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 {
 	DWORD header_index;								/* 첫글자의 사전에서의 헤더 인덱스 */
-	DWORD ret_val, r_val1, r_val2;					/* 모듈 호출 리턴값 */
-	tCNMORP_RESULT CNMorpRes[MAX_MORP_LIST];		/* 복합명사 기분석 사전 분석 결과 저장 버퍼 */
-	UWORD CNMorpRes_Index;
+	DWORD ret_val, r_val1, r_val2 = 0;					/* 모듈 호출 리턴값 */
 	//tUADMORP_RESULT UserAnsRes[MAX_MORP_LIST];       /* 사용자  기분석 사전 분석 결과 저장 버퍼 */
 	//UWORD UserAnsRes_Index;
 	UBYTE wan_str[VS_BUFLEN];						/* 조합형 어절에 대한 완성형 스트링 */
@@ -622,6 +627,7 @@ DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 	DWORD conv_ret;
 	UWORD i;
 
+#if 1
 	
 	extern DWORD ConvertJo2Wan(HANGUL *h_word, UWORD h_word_len, UBYTE *wan_str);
 
@@ -691,14 +697,28 @@ DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 	 * 복합명사 기분석 사전에 분석에 성공하면, CNMorpRes에 저장된 분석 결과를
 	 * MorpResult로 복사한다.
 	 */
-	ret_val = CheckCompNounWord((HANGUL *)han_word, hword_len, header_index, CNMorpRes, &CNMorpRes_Index);
-	if (ret_val) {
-		/*
-		 * 분석 성공하면 복합명사 형태소 분석 결과 저장 버퍼의 내용을
-		 * MorpResult 버퍼로 복사한다.
-		 */
-		ret_val = CopyCNMAResultToMorpResult(CNMorpRes, CNMorpRes_Index);
-		return ret_val;
+	{
+		//tCNMORP_RESULT CNMorpRes[MAX_MORP_LIST];		/* 복합명사 기분석 사전 분석 결과 저장 버퍼 */
+		tCNMORP_RESULT *CNMorpRes;
+		UWORD CNMorpRes_Index;
+
+		CNMorpRes = new tCNMORP_RESULT[MAX_MORP_LIST];
+		if (CNMorpRes)
+		{
+			ret_val = CheckCompNounWord((HANGUL *)han_word, hword_len, header_index, CNMorpRes, &CNMorpRes_Index);
+			if (ret_val) {
+				/*
+				 * 분석 성공하면 복합명사 형태소 분석 결과 저장 버퍼의 내용을
+				 * MorpResult 버퍼로 복사한다.
+				 */
+				ret_val = CopyCNMAResultToMorpResult(CNMorpRes, CNMorpRes_Index);
+				free(CNMorpRes);
+				return ret_val;
+			}
+
+			delete[] CNMorpRes;
+		}
+
 	}
 #endif
 
@@ -763,6 +783,7 @@ DWORD MorpAnal_J(JO_CHAR *han_word, DWORD hword_len)
 #endif
 	}
 
+#endif
 	return r_val2;
 }
 

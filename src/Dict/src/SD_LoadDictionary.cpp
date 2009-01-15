@@ -11,11 +11,13 @@
 #include <MA_Type.h>
 #include <MA_GMacro.h>
 #include <MA_HanType.h>
+#include <MA_Func.h>
 #include <MA_ReturnCode.h>
 #include <MADIC_Type.h>
 #include <MADIC_Global.h>
 #include <MADIC_Func.h>
 #include <MA_UtilLib.h>
+#include <MA_SearchTailDic.h>
 
 #ifdef SHARED_MEMORY_DIC
 #include <MA_ShmOP.h>
@@ -47,7 +49,7 @@ DWORD LoadDictionary(BYTE *dic_dir)
 	FILE *fd_dic;
 	DWORD i, ret, ret_val;
 	BYTE dic_files[S_BUFLEN];
-	BYTE line[S_BUFLEN];
+	//BYTE line[S_BUFLEN];
 	strcpy(dic_files, dic_dir);
 #ifdef WIN32
 	strcat(dic_files, "\\");
@@ -147,7 +149,7 @@ DWORD LoadDictionary(BYTE *dic_dir)
 			//ex)In MemoryCreate : allocation failure...
 			//MAX_EDIC_HEADER_SIZE=500을 경계값으로 이상이 될 경우 비정상적 종료
 			if(JDic_Header[i].size > MAX_JDIC_HEADER_SIZE){
-				printf("JDic_Header[%d].size:%d\n",JDic_Header[i].size);
+				printf("JDic_Header[%d].size:%d\n", i, JDic_Header[i].size);
 				printf("the limit value of JDic_Header[].size is %d",MAX_JDIC_HEADER_SIZE);
 								
                 printf("Error:[DICJOSA]  ");
@@ -192,7 +194,7 @@ DWORD LoadDictionary(BYTE *dic_dir)
             //ex)In MemoryCreate : allocation failure...
 			//MAX_EDIC_HEADER_SIZE=500을 경계값으로 이상이 될 경우 비정상적 종료
             if(EDic_Header[i].size > MAX_EDIC_HEADER_SIZE){
-				printf("EDic_Header[%d].size:%d\n",EDic_Header[i].size);
+				printf("EDic_Header[%d].size:%d\n", i ,EDic_Header[i].size);
 				printf("the limit value of EDic_Header[].size is %d",MAX_EDIC_HEADER_SIZE);				
                 printf("Error:[DICEOMI]  ");
                 printf("Check the Dictionary version.\n");

@@ -1,5 +1,8 @@
 #ifndef _MA_SHMOP_H_
 #define _MA_SHMOP_H_
+
+#ifdef CD_PROC
+
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -19,5 +22,7 @@
 
 int GetShMem(key_t sh_key, unsigned int size, void **ptr);
 int ClearShMem(void **ptr);
+
+#endif
 
 #endif

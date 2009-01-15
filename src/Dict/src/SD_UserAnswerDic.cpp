@@ -209,7 +209,7 @@ DWORD UAD_SearchWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, USERDIC_RE
 	}
 
 	while (remain_chars > 0) {
-		ret_val = UAD_SearchCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = UAD_SearchCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (UserAnsDic_Roots[h_idx][node_index].InfoStart != 0 ||
 				UserAnsDic_Roots[h_idx][node_index].InfoLen != 0) {
@@ -329,7 +329,7 @@ WORD UAD_InsertWord(BYTE *word, UDWORD StartIdx, UBYTE InfoLen)
 	UWORD header_idx;
 	DWORD voca_len;
 
-	voca_len = MakeHanBuf(word, voca, &header_idx);
+	voca_len = MakeHanBuf((UBYTE*)word, voca, &header_idx);
 
 	if (voca_len == 0)
 		return 0;
@@ -367,7 +367,7 @@ DWORD UAD_InsertWordInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, UDWORD Sta
 		return char_index;		/* 한글 스트링의 길이 만큼 리턴 */
 	} else {
 		while (remain_chars > 0) {
-			ret_val = UAD_SearchCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+			ret_val = UAD_SearchCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 			if (ret_val == 1) {
 				if (UserAnsDic_Roots[h_idx][node_index].node_info.next == 0) {
 					if (remain_chars == 1) {
@@ -593,7 +593,7 @@ DWORD CheckUserAnswerDic(HANGUL *hword, UWORD hword_len, UWORD h_idx, tUADMORP_R
 
 		if (*pCont == '/') {
 			ItemStr[idx] = '\0';
-			strcpy(UADMorpRes[MR_num].MI[UADMorpRes[MR_num].nMorp].Morpheme, ItemStr);
+			strcpy((char*)UADMorpRes[MR_num].MI[UADMorpRes[MR_num].nMorp].Morpheme, (char*)ItemStr);
 			idx = 0;
 			pCont++;
 
@@ -636,7 +636,7 @@ DWORD GetUADContent(UDWORD s_idx, UBYTE len, UBYTE *Content)
 {               
 	if(s_idx+len >= MAX_USER_ANSDIC_CONS_SIZE)
 		return 0;
-	strncpy(Content, &UserAnsDic_Cons[s_idx], len);
+	strncpy((char*)Content, (char*)&UserAnsDic_Cons[s_idx], len);
 	Content[len] = '\0';
 	return 1;
 }  

@@ -61,6 +61,9 @@ DWORD FilterIndexWord(INDEX_WORD *index_words);
 DWORD compare_index_str(INDEX_ITEM *idx1, INDEX_ITEM *idx2);
 tVOID ReGenMAResult(DWORD flag, FILE *fd, tMORP_RESULT *sMorpResult, UWORD sMorpResult_Index);
 
+tVOID Convert_NumInfo(unsigned short int info, char *info_str);
+tVOID Convert_StrInfo(char *info, char *info_str);
+
 UWORD Hj2HgProc(H_CHAR *han_char);
 
 DWORD CheckIda(HANGUL *h_word, UWORD h_word_len, UWORD jong);

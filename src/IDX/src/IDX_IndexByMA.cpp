@@ -3,6 +3,8 @@
 #include <MA_Interface.h>
 #include <ConvertUTF.h>
 #include <UnicodeBlocks31.h>
+#include <assert.h>
+#include <boost/scoped_array.hpp>
 
 /*
  * 색인 타입 : INDEX_BY_MA
@@ -56,7 +58,8 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	UTF32	token[MAXTOKENLEN], u32_str[MAXTOKENLEN], *u32_ptr;
 	UTF32	hconv_tok[MAXTOKENLEN];
 	UTF8	u8_str[MAXTOKENLEN], *u8_start_ptr, *u8_end_ptr;
-	UTF8	original_word[MAXTOKENLEN];
+	//UTF8	original_word[MAXTOKENLEN];
+	boost::scoped_array<UTF8> original_word(new UTF8[MAXTOKENLEN]);
 	int		u8str_len;
 	int		token_len;
 	JO_CHAR	j_hanstr[MAXTOKENLEN];
@@ -71,6 +74,9 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	extern int HanjaFlag;
 	extern int StartWordNum;
 
+	if (0 == original_word)
+		return 0;
+
 	wordNum = StartWordNum;
 
 	InitTokenizer((unsigned char *) SecVal);
@@ -81,15 +87,15 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 		u32_ptr = token;
 		u8_start_ptr = (UTF8 *) u8_str;
-		u8_end_ptr = (UTF8 *) &(u8_str[MAXTOKENLEN]);
+		u8_end_ptr = (UTF8 *) &(u8_str[MAXTOKENLEN - 1]);
 		cnvt_res = ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_start_ptr, u8_end_ptr, strictConversion, &u8str_len);
 		u8_str[u8str_len] = '\0';
 		
 		/* 불용어 제거 */
-		if (IDX_FindStopWord(u8_str))
+		if (IDX_FindStopWord((char*)u8_str))
 			continue;
 
-		strcpy(original_word, u8_str);
+		strcpy((char*)original_word.get(), (char*)u8_str);
 
 		switch (ret_tok) {
 			case T_HAN: /* 한글 */
@@ -137,7 +143,7 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 						 */
 						if (idx_words.IDX[j].str_len >= 2 && idx_words.nIndex == 1) {
 							/* 불용어 제거 */
-							if (IDX_FindStopWord(u8_str))
+							if (IDX_FindStopWord((char*)u8_str))
 								continue;
 						}
 
@@ -172,11 +178,11 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					// 워드 자체도 색인어로 지정(2005/02/14)
 					/////////////////////////////////////////////////////////////////
 					for (k = org_PostInfoCnt; k < PostInfoCnt; k++)
-						if (!strcmp(original_word, PostInfo[k].key))
+						if (!strcmp((char*)original_word.get(), PostInfo[k].key))
 							break;
 					if (k == PostInfoCnt) {
-						strcpy(PostInfo[PostInfoCnt].key, (char *) original_word);
-						PostInfo[PostInfoCnt].keyLen = strlen(original_word);
+						strcpy(PostInfo[PostInfoCnt].key, (char *) original_word.get());
+						PostInfo[PostInfoCnt].keyLen = strlen((char*)original_word.get());
 						PostInfo[PostInfoCnt].psgNum = 7777;
 						PostInfo[PostInfoCnt].wordNum = org_wordNum;
 						if (org_PostInfoCnt == PostInfoCnt) // 색인어가 없는 어절...
@@ -266,7 +272,7 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 					u8_str[u8str_len] = '\0';
 
-					if (strlen(u8_str) > MAXKEYLEN)
+					if (strlen((char*)u8_str) > MAXKEYLEN)
 						break;
 
 					strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
@@ -293,10 +299,10 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 
 				u8_str[u8str_len] = '\0';
 				*/
-				if (strlen(u8_str) > MAXKEYLEN)
+				if (strlen((char*)u8_str) > MAXKEYLEN)
 					break;
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_str);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_str);
 				PostInfo[PostInfoCnt].psgNum = 1;
 				PostInfo[PostInfoCnt].wordNum = wordNum++;
 
@@ -316,7 +322,7 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				cnvt_res = ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_start_ptr, u8_end_ptr, strictConversion, &u8str_len);
 				u8_str[u8str_len] = '\0';
 				*/
-				if (strlen(u8_str) > MAXKEYLEN)
+				if (strlen((char*)u8_str) > MAXKEYLEN)
 					break;
 
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);

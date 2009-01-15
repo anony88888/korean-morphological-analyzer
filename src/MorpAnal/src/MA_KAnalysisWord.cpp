@@ -23,7 +23,7 @@ DWORD
 KAnalysisWord(HANGUL *h_word, UWORD h_word_len, DIC_RESULT *dic_result, UWORD dic_res_idx, DWORD mode)
 {
     DWORD i, j, k;
-	DWORD chk_93_info, chk_93_info_idx;
+	//DWORD chk_93_info, chk_93_info_idx;
 #ifdef MULTI_DIC_INFO
     JEDIC_RESULT jdic_result[VS_BUFLEN];
 #else
@@ -89,8 +89,8 @@ KAnalysisWord(HANGUL *h_word, UWORD h_word_len, DIC_RESULT *dic_result, UWORD di
 
 	#ifdef MULTI_DIC_INFO
 		// by mini(2005.08.30)	
-			M_CUR_MORPRESULT_MI_NINFO = strlen(dic_result[i].info);
-			strcpy(M_CUR_MORPRESULT_MI_INFO, dic_result[i].info);
+			M_CUR_MORPRESULT_MI_NINFO = strlen((const char*)dic_result[i].info);
+			strcpy(M_CUR_MORPRESULT_MI_INFO, (const char*)dic_result[i].info);
 	#else
 		M_CUR_MORPRESULT_MI_NINFO = 1;
 		M_CUR_MORPRESULT_MI_INFO_ITEM(0) = dic_result[i].info;

@@ -58,11 +58,7 @@ static BYTE *sh_BTAILDIC_Cons_ptr;
 #endif
 
 
-DWORD GetTAILContent(s_idx, len, Content, mode)
-UDWORD s_idx;
-UBYTE len;
-UBYTE *Content;
-UWORD mode;
+DWORD GetTAILContent(UDWORD s_idx, UBYTE len, UBYTE *Content, UWORD mode)
 {
     switch (mode) {
 		case 1:
@@ -76,19 +72,17 @@ UWORD mode;
 			break;
     }
 
-	strncpy(Content, &TAILDic_Cons[s_idx], len);
+	strncpy((char*)Content, (char*)&TAILDic_Cons[s_idx], len);
 	Content[len] = '\0';
 
 	return 1;
 }
 
-DWORD SearchTAILDic(h_word, h_word_len, h_idx, result, res_idx, mode)
-HANGUL *h_word;
-UWORD h_word_len;
-DWORD h_idx;
-TAILDIC_RESULT *result;
-UWORD *res_idx;
-UWORD mode;
+static DWORD SearchWordInTrieDicNTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx);
+static DWORD SearchWordInTrieDicPTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx);
+static DWORD SearchWordInTrieDicBTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx);
+
+DWORD SearchTAILDic(HANGUL *h_word, UWORD h_word_len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx, UWORD mode)
 {
     DWORD ret_val;
 
@@ -117,12 +111,10 @@ UWORD mode;
     return (ret_val);
 }
 
-WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
-SearchCharInCurrentLevelNTAIL(one_char, g_idx, index)
-HANGUL one_char;
-DWORD g_idx;
-DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
-				/* 못찾았을 때 : 변화없음... */
+static WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
+SearchCharInCurrentLevelNTAIL(HANGUL one_char, DWORD g_idx
+							  , DWORD *index)	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
+												/* 못찾았을 때 : 변화없음... */
 {
 	DWORD node_index = *index;
 
@@ -144,13 +136,7 @@ DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
 	return FALSE;
 } /* End of SearchCharInCurrentLevel */
 
-DWORD
-SearchWordInTrieDicNTAIL(h_word, len, h_idx, result, res_idx)
-HANGUL *h_word;
-DWORD len;
-DWORD h_idx;
-TAILDIC_RESULT *result;
-UWORD *res_idx;
+static DWORD SearchWordInTrieDicNTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx)
 {
 	UDWORD node_index = 0;  /* 현재 트라이 노드를 가리키는 인덱스 */
 	UDWORD char_index = 0;  /* 현재 글자를 가리키는 인덱스 */
@@ -163,7 +149,7 @@ UWORD *res_idx;
 	}
 
 	while (remain_chars > 0) {
-		ret_val = SearchCharInCurrentLevelNTAIL(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevelNTAIL(h_word[char_index], h_idx, (DWORD *)&node_index);
 		if (ret_val == 1) {
 			if (NTAILDic_Roots[h_idx][node_index].InfoStart != 0 ||
 					NTAILDic_Roots[h_idx][node_index].InfoLen != 0) {
@@ -199,12 +185,10 @@ UWORD *res_idx;
 	return 0;
 } /* End of SearchWordInTrieDic */
 
-WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
-SearchCharInCurrentLevelPTAIL(one_char, g_idx, index)
-HANGUL one_char;
-DWORD g_idx;
-DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
-				/* 못찾았을 때 : 변화없음... */
+static WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
+SearchCharInCurrentLevelPTAIL(HANGUL one_char, DWORD g_idx
+							  , DWORD *index)	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
+												/* 못찾았을 때 : 변화없음... */
 {
 	DWORD node_index = *index;
 
@@ -226,13 +210,7 @@ DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
 	return FALSE;
 } /* End of SearchCharInCurrentLevel */
 
-DWORD
-SearchWordInTrieDicPTAIL(h_word, len, h_idx, result, res_idx)
-HANGUL *h_word;
-DWORD len;
-DWORD h_idx;
-TAILDIC_RESULT *result;
-UWORD *res_idx;
+static DWORD SearchWordInTrieDicPTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx)
 {
 	UDWORD node_index = 0;  /* 현재 트라이 노드를 가리키는 인덱스 */
 	UDWORD char_index = 0;  /* 현재 글자를 가리키는 인덱스 */
@@ -245,7 +223,7 @@ UWORD *res_idx;
 	}
 
 	while (remain_chars > 0) {
-		ret_val = SearchCharInCurrentLevelPTAIL(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevelPTAIL(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (PTAILDic_Roots[h_idx][node_index].InfoStart != 0 ||
 					PTAILDic_Roots[h_idx][node_index].InfoLen != 0) {
@@ -281,11 +259,10 @@ UWORD *res_idx;
 	return 0;
 } /* End of SearchWordInTrieDic */
 
-WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
-SearchCharInCurrentLevelBTAIL(one_char, g_idx, index)
-HANGUL one_char;
-DWORD g_idx;
-DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
+static WORD		/* 찾으면 : TRUE, 못 찾으면 : FALSE */
+SearchCharInCurrentLevelBTAIL(HANGUL one_char
+  , DWORD g_idx
+  , DWORD *index)	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
 				/* 못찾았을 때 : 변화없음... */
 {
 	DWORD node_index = *index;
@@ -308,13 +285,7 @@ DWORD *index;	/* 찾았을 때 : 찾은 노드의 next 값을 리턴 */
 	return FALSE;
 } /* End of SearchCharInCurrentLevel */
 
-DWORD
-SearchWordInTrieDicBTAIL(h_word, len, h_idx, result, res_idx)
-HANGUL *h_word;
-DWORD len;
-DWORD h_idx;
-TAILDIC_RESULT *result;
-UWORD *res_idx;
+static DWORD SearchWordInTrieDicBTAIL(HANGUL *h_word, DWORD len, DWORD h_idx, TAILDIC_RESULT *result, UWORD *res_idx)
 {
 	UDWORD node_index = 0;  /* 현재 트라이 노드를 가리키는 인덱스 */
 	UDWORD char_index = 0;  /* 현재 글자를 가리키는 인덱스 */
@@ -327,7 +298,7 @@ UWORD *res_idx;
 	}
 
 	while (remain_chars > 0) {
-		ret_val = SearchCharInCurrentLevelBTAIL(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchCharInCurrentLevelBTAIL(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (BTAILDic_Roots[h_idx][node_index].InfoStart != 0 ||
 					BTAILDic_Roots[h_idx][node_index].InfoLen != 0) {
@@ -385,8 +356,7 @@ tVOID InitTAILDicHeader()
 	}
 }
 
-DWORD LoadTAILDic(dic_dir)
-BYTE *dic_dir;
+DWORD LoadTAILDic(BYTE *dic_dir)
 {
 	BYTE dic_file[VS_BUFLEN];
 	BYTE con_file[VS_BUFLEN];
@@ -461,7 +431,7 @@ BYTE *dic_dir;
 
 		if (NTAILDic_Header[i].size != 0) {
 			if(NTAILDic_Header[i].size>MAX_NTAILDIC_HEADER_SIZE){
-                printf("NTAILDic_Header[%d].size:%d\n",NTAILDic_Header[i].size);
+                printf("NTAILDic_Header[%d].size:%d\n", i, NTAILDic_Header[i].size);
                 printf("the limit value of NTAILDic_Header[].size is %d\n",MAX_NTAILDIC_HEADER_SIZE);
                 printf("Error:[DICNTAIL]  ");
                 printf("Check the Dictionary version.\n");
@@ -578,7 +548,7 @@ BYTE *dic_dir;
 	for (i = 0; i < HEADER_NUM; i++) {
 		if (PTAILDic_Header[i].size != 0) {
 			if(PTAILDic_Header[i].size>MAX_PTAILDIC_HEADER_SIZE){
-                    printf("PTAILDic_Header[%d].size:%d\n",PTAILDic_Header[i].size);
+                    printf("PTAILDic_Header[%d].size:%d\n", i, PTAILDic_Header[i].size);
                     printf("the limit value of PTAILDic_Header[].size is %d\n",MAX_PTAILDIC_HEADER_SIZE);
                     printf("Error:[DICPTAIL]  ");
                     printf("Check the Dictionary version.\n");
@@ -683,7 +653,7 @@ BYTE *dic_dir;
 	for (i = 0; i < HEADER_NUM; i++) {
 		if (BTAILDic_Header[i].size != 0) {
 			if(BTAILDic_Header[i].size>MAX_BTAILDIC_HEADER_SIZE){
-                    printf("BTAILDic_Header[%d].size:%d\n",BTAILDic_Header[i].size);
+                    printf("BTAILDic_Header[%d].size:%d\n", i, BTAILDic_Header[i].size);
                     printf("the limit value of BTAILDic_Header[].size is %d\n",MAX_BTAILDIC_HEADER_SIZE);
                     printf("Error:[DICBTAIL]  ");
                     printf("Check the Dictionary version.\n");

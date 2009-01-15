@@ -8,6 +8,8 @@
 #include <ConvertUTF.h>
 #include <UnicodeBlocks31.h>
 
+int GetCodeType(UTF32 c);
+
 //#define MAX_INTERNAL_BUF		300000
 #define MAX_INTERNAL_BUF		1000000	// 2007.02.20 (modified)
 #define MAX_DELS_NUM			100
@@ -82,7 +84,7 @@ int IDX_UTF8toUTF32(unsigned char *utf8_val, unsigned int *utf32_val, unsigned i
 	int 	u32_len;
 	UTF8	*u8_start, *u8_end;
 	UTF32	*u32_start, *u32_end;
-	int		u8_len = strlen(utf8_val);
+	int		u8_len = strlen((char*)utf8_val);
 	int 	i;
 	ConversionResult c_res;
 
@@ -144,11 +146,11 @@ int isHanjaExist(char *str)
 void InitTokenizer(unsigned char *doc)
 {
 	ConversionResult cnvt_res;
-	int doc_len = strlen(doc);
+	int doc_len = strlen((char*)doc);
 	UTF8 *doc_start;
 	UTF32 *u_start;
 	extern char *dels;
-	int i;
+	//int i;
 
 	_U_len = 0;
 	_CurrPos = 0;
@@ -158,7 +160,8 @@ void InitTokenizer(unsigned char *doc)
 	u_start = (UTF32 *) _UTF32_SecVal;
 
 	/* UTF-8 >> UTF-32 */
-	cnvt_res = ConvertUTF8toUTF32(&doc_start, &(doc[doc_len]), &u_start, &(_UTF32_SecVal[MAX_INTERNAL_BUF]), strictConversion, &_U_len);
+	cnvt_res = ConvertUTF8toUTF32(&doc_start, (UTF8*)&(doc[doc_len]), &u_start
+		, &(_UTF32_SecVal[MAX_INTERNAL_BUF]), strictConversion, (int*)&_U_len);
 
 	_D_len = 0;
 	if (dels != NULL) {
@@ -167,7 +170,8 @@ void InitTokenizer(unsigned char *doc)
 		u_start = (UTF32 *) _UTF32_Dels;
 
 		/* UTF-8 >> UTF-32 */
-		cnvt_res = ConvertUTF8toUTF32(&doc_start, &(dels[doc_len]), &u_start, &(_UTF32_Dels[MAX_DELS_NUM]), strictConversion, &_D_len);
+		cnvt_res = ConvertUTF8toUTF32(&doc_start, (UTF8*)&(dels[doc_len]), &u_start
+			, &(_UTF32_Dels[MAX_DELS_NUM]), strictConversion, (int*)&_D_len);
 	}
 }
 

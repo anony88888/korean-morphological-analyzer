@@ -20,10 +20,10 @@ int IDX_IndexByChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	/* "한자는 그대로" 플래그가 세팅되지 않으면 한글로 변환 */
 	/* 수정 : 한자 플래그 1 --> 변환 */
 	if (HanjaFlag == 1) {
-		Hanja2Hangul_UTF8(SecVal, TempSecVal);
-		InitTokenizer(TempSecVal);
+		Hanja2Hangul_UTF8((unsigned char*)SecVal, (unsigned char*)TempSecVal);
+		InitTokenizer((unsigned char*)TempSecVal);
 	} else {
-		InitTokenizer(SecVal);
+		InitTokenizer((unsigned char*)SecVal);
 	}	
 
 /*
@@ -52,7 +52,7 @@ int IDX_IndexByChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				ConvertUTF32toUTF8(&u32_ptr, &(token[token_len]), &u8_ptr, &(u8_tok[MAXTOKENLEN]), strictConversion, &u8_len);
 				u8_tok[u8_len] = '\0';
 
-				if (IDX_FindStopWord(u8_tok))
+				if (IDX_FindStopWord((char*)u8_tok))
 					break;
 
 				for (i = 0; i < token_len; i++) {
@@ -61,10 +61,10 @@ int IDX_IndexByChar(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 					ConvertUTF32toUTF8(&u32_ptr, &(token[i+1]), &u8_ptr, &(u8_tok[MAXTOKENLEN]), strictConversion, &u8_len);
 					u8_tok[u8_len] = '\0';
 
-					strcpy(PostInfo[PostInfoCnt].key, u8_tok);
+					strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
 					if (ret_tok == T_LAT)
 						strlower(PostInfo[PostInfoCnt].key);
-					PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+					PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 					PostInfo[PostInfoCnt].wordNum = wordNum++;
 					PostInfo[PostInfoCnt].psgNum = 0;
 					if ( PostInfo[PostInfoCnt].keyLen > MAXKEYLEN )

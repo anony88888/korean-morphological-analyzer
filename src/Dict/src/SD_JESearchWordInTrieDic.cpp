@@ -39,7 +39,7 @@ DWORD SearchJosaInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 
 	while (remain_chars > 0) {
 		cur_level_start_idx = node_index;
-		ret_val = SearchJosaCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchJosaCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			/* 조사/어미 사전 탐색일 경우에는 첫글자에 대해서 종성을 제거한 글자에 대한 탐색을 하지 않는다 */
 			if (char_index > 0 && h_word[char_index].j_han.sign == 1 && h_word[char_index].j_han.jong != 1) { 
@@ -53,7 +53,7 @@ DWORD SearchJosaInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchJosaCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchJosaCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (JDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;
@@ -134,7 +134,7 @@ DWORD SearchJosaInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchJosaCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchJosaCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (JDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;
@@ -195,7 +195,7 @@ DWORD SearchEomiInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 
 	while (remain_chars > 0) {
 		cur_level_start_idx = node_index;
-		ret_val = SearchEomiCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchEomiCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (char_index > 0 && h_word[char_index].j_han.sign == 1 && h_word[char_index].j_han.jong != 1) { 
 				/* node_index가 변하므로 이전 값을 저장해야 한다. */
@@ -208,7 +208,7 @@ DWORD SearchEomiInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchEomiCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchEomiCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (EDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;
@@ -289,7 +289,7 @@ DWORD SearchEomiInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchEomiCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchEomiCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (EDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;
@@ -350,7 +350,7 @@ DWORD SearchBojoInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 
 	while (remain_chars > 0) {
 		cur_level_start_idx = node_index;
-		ret_val = SearchBojoCharInCurrentLevel(h_word[char_index], h_idx, &node_index);
+		ret_val = SearchBojoCharInCurrentLevel(h_word[char_index], h_idx, (DWORD*)&node_index);
 		if (ret_val == 1) {
 			if (char_index > 0 && h_word[char_index].j_han.sign == 1 && h_word[char_index].j_han.jong != 1) { 
 				/* node_index가 변하므로 이전 값을 저장해야 한다. */
@@ -363,7 +363,7 @@ DWORD SearchBojoInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchBojoCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchBojoCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (BDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;
@@ -444,7 +444,7 @@ DWORD SearchBojoInTrieDic(HANGUL *h_word, DWORD len, DWORD h_idx, DIC_RESULT *re
 				one_char.j_han.jong = 1;
 
 				node_index = cur_level_start_idx;
-				ret_val = SearchBojoCharInCurrentLevel(one_char, h_idx, &node_index);
+				ret_val = SearchBojoCharInCurrentLevel(one_char, h_idx, (DWORD*)&node_index);
 				if (ret_val == 1) {
 					if (BDic_Roots[h_idx][node_index].node_info.info != 0) {
 						result[*res_idx].len = char_index+1;

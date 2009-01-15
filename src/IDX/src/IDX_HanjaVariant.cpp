@@ -19,10 +19,10 @@ int LoadHanjaVariantTable(char *in_file)
 	FILE *fd_in;
 	int cur_flag; // 1 --> S, 2 --> V, 3 --> T
 	int T_idx, V_idx, S_idx;
-	int i;
-	UTF32 u32_str[100], *u32_ptr;
-	UTF8 u8_str[100], *u8_ptr;
-	int u8_str_len;
+	//int i;
+	//UTF32 u32_str[100], *u32_ptr;
+	//UTF8 u8_str[100], *u8_ptr;
+	//int u8_str_len;
 
 	fd_in = fopen(in_file, "rt");
 	if (fd_in == NULL)
@@ -89,7 +89,7 @@ int AppendHanjaVariableToPostInfo(unsigned int h_code, POSTINFO *PostInfo, int w
 	int i, PostInfoCnt = 0;
 	int temp, opt;
 	int S_opt = 0, V_opt = 0, T_opt = 0;
-	unsigned int h_code_T;
+	//unsigned int h_code_T;
 
 	ConvToCJK(&h_code);
 
@@ -233,8 +233,8 @@ int AppendHanjaVariableToPostInfo(unsigned int h_code, POSTINFO *PostInfo, int w
 				ConvertUTF32toUTF8(&u32_ptr, &(hv->S_val[i+1]), &u8_ptr, &(u8_tok[127]), strictConversion, &u8_len);
 				u8_tok[u8_len] = '\0';
 
-				strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+				strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 				PostInfo[PostInfoCnt].wordNum = wordNum;
 				PostInfo[PostInfoCnt].psgNum = 0;
 				PostInfoCnt++;
@@ -257,8 +257,8 @@ int AppendHanjaVariableToPostInfo(unsigned int h_code, POSTINFO *PostInfo, int w
 				ConvertUTF32toUTF8(&u32_ptr, &(hv->V_val[i+1]), &u8_ptr, &(u8_tok[127]), strictConversion, &u8_len);
 				u8_tok[u8_len] = '\0';
 
-				strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+				strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 				PostInfo[PostInfoCnt].wordNum = wordNum;
 				PostInfo[PostInfoCnt].psgNum = 0;
 				PostInfoCnt++;
@@ -280,8 +280,8 @@ int AppendHanjaVariableToPostInfo(unsigned int h_code, POSTINFO *PostInfo, int w
 				ConvertUTF32toUTF8(&u32_ptr, &(hv->T_val[i+1]), &u8_ptr, &(u8_tok[127]), strictConversion, &u8_len);
 				u8_tok[u8_len] = '\0';
 
-				strcpy(PostInfo[PostInfoCnt].key, u8_tok);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_tok);
+				strcpy(PostInfo[PostInfoCnt].key, (char*)u8_tok);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_tok);
 				PostInfo[PostInfoCnt].wordNum = wordNum;
 				PostInfo[PostInfoCnt].psgNum = 0;
 				PostInfoCnt++;

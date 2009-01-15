@@ -20,6 +20,7 @@
 #include <MA_Interface.h>
 #include <math.h>
 //#include <MA_Jo2Wan.h>
+#include <boost/scoped_ptr.hpp>
 
 /* 이 세개의 변수는 형식형태소 생성 툴의 결과를 참고해야 한다. */
 #define TOTAL_NTAIL_FREQ		17923452
@@ -176,7 +177,7 @@ DWORD ConvertWan2Jo(UBYTE *w_str, HANGUL *j_str);
 DWORD ParseMorpStr(UBYTE *str, MORPHEME *morps);
 DWORD GetIndexWordFromMAResult(INDEX_WORD *Index, ITF_MA_RESULT ma_result);
 DWORD GetIndexFromUnknownWord(HANGUL *h_word, UWORD h_word_len, INDEX_WORD *Index);
-DWORD compare_prob(TAIL_PROB *node1, TAIL_PROB *node2);
+int compare_prob(const void*p1, const void*p2);
 //DWORD CopyMorpResult();
 DWORD CopyMorpResult(UK_MORP_RES *morp_result);
 DWORD CopyMorpResultToMAResult(ITF_MA_RESULT *ma_result);
@@ -218,15 +219,15 @@ DWORD GetIndexWordFromMAResult(INDEX_WORD *Index, ITF_MA_RESULT ma_result)
 		com_nouns[0] = '\0';
 		for (j = 0; j < ma_result.IMR[i].nMorp; j++) {
 			if (ma_result.IMR[i].MI[j].info[0] == 'n') {
-				strcpy(Index->IDX[Index->nIndex].str, ma_result.IMR[i].MI[j].Morpheme);
+				strcpy((char*)Index->IDX[Index->nIndex].str, (char*)ma_result.IMR[i].MI[j].Morpheme);
 				Index->IDX[Index->nIndex].loc = loc;
-				strcat(com_nouns, Index->IDX[Index->nIndex].str);
+				strcat((char*)com_nouns, (char*)Index->IDX[Index->nIndex].str);
 				Index->nIndex++;
 			}
-			loc += strlen(ma_result.IMR[i].MI[j].Morpheme);
+			loc += strlen((char*)ma_result.IMR[i].MI[j].Morpheme);
 		}
 		
-		strcpy(Index->IDX[Index->nIndex].str, com_nouns);
+		strcpy((char*)Index->IDX[Index->nIndex].str, (char*)com_nouns);
 		Index->IDX[Index->nIndex].loc = 0;
 		Index->nIndex++;
 	}
@@ -260,12 +261,21 @@ DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_r
 	double P_Bigram, P_Tail;
 	double TailLenRatio;
 	//by mini
-	UK_MORP_RES local_morp_res, morp_result;
+	//UK_MORP_RES local_morp_res, morp_result;
+	boost::scoped_ptr<UK_MORP_RES> local_morp_res(new UK_MORP_RES), morp_result(new UK_MORP_RES);
+	if (0 == local_morp_res)
+		return 0;
+	if (0 == morp_result)
+	{
+		return 0;
+	}
+
+
 //	UWORD MorpRes_num=0;
 //	ma_result->MARes_num = 0;
 //	local_ma_res.MARes_num = 0;
-	local_morp_res.MorpRes_num = 0;
-	morp_result.MorpRes_num=0;
+	local_morp_res->MorpRes_num = 0;
+	morp_result->MorpRes_num=0;
 	/* 중요한 버그 발견 Prob을 초기화 시켜야 한다. */
 	Prob[0].P = (double) 0.0;
 	ReverseWord(rev_h_word, h_word, h_word_len);
@@ -299,21 +309,21 @@ DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_r
 			if (ret_val != 0) {
 				/* 경계 바이그램 빈도 */
 				GetTAILContent(bnd_dic_result[0].InfoStart, bnd_dic_result[0].InfoLen, MARContent_org, BTAIL_MODE);
-				ptr = strtok(MARContent_org, "&");
-				ptr = strtok(NULL, "&");
+				ptr = (UBYTE*)strtok((char*)MARContent_org, "&");
+				ptr = (UBYTE*)strtok(NULL, "&");
 
-				freq_btail = atoi(ptr);
+				freq_btail = atoi((char*)ptr);
 			} else
 				freq_btail = 0;
 
 			/* 체언형 형식형태소 빈도 */
 			GetTAILContent(tail_dic_result[i].InfoStart, tail_dic_result[i].InfoLen, MARContent_org, NTAIL_MODE);
-			ptr = strtok(MARContent_org, "&");
+			ptr = (UBYTE*)strtok((char*)MARContent_org, "&");
 			//printf("MARContent_org%s\n",MARContent_org);
-			strcpy(MARContent, ptr);
-			ptr = strtok(NULL, "&");
+			strcpy((char*)MARContent, (char*)ptr);
+			ptr = (UBYTE*)strtok(NULL, "&");
 
-			freq_ntail = atoi(ptr);
+			freq_ntail = atoi((char*)ptr);
 
 			/* 
 			 * 확률값 계산 
@@ -325,18 +335,18 @@ DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_r
 			Prob[Prob_idx].P = (double)LAMDA1*TailLenRatio + (double)LAMDA2*P_Tail + (double)LAMDA3*P_Bigram;
 
 			//Prob[Prob_idx].from = local_ma_res.MARes_num;
-			Prob[Prob_idx].from = local_morp_res.MorpRes_num;
-			SaveUnknownMARes(&local_morp_res, h_word, h_word_len, tail_dic_result[i], MARContent, NTAIL_MODE);
+			Prob[Prob_idx].from = local_morp_res->MorpRes_num;
+			SaveUnknownMARes(local_morp_res.get(), h_word, h_word_len, tail_dic_result[i], MARContent, NTAIL_MODE);
 			//SaveUnknownMARes(&local_morp_res, &local_ma_res, h_word, h_word_len, tail_dic_result[i], MARContent, NTAIL_MODE);
 		//	printf("local_ma_res.MARes_num:%d\n",local_ma_res.MARes_num);
 //			printf("local_morp_res.MorpRes_num:%d\n",local_morp_res.MorpRes_num);
-			Prob[Prob_idx].to = local_morp_res.MorpRes_num - 1;
+			Prob[Prob_idx].to = local_morp_res->MorpRes_num - 1;
 		//	Prob[Prob_idx].to = local_ma_res.MARes_num - 1;
 			
 			//printf("Prob[%d].to:%d\n",Prob_idx,Prob[Prob_idx].to);
 			//printf("Prob[%d].from:%d Prob[%d].to:%d %lf\n",Prob_idx,Prob[Prob_idx].from, Prob_idx,Prob[Prob_idx].to,Prob[Prob_idx].P);
 			Prob_idx++;
-			if(local_morp_res.MorpRes_num>13)
+			if(local_morp_res->MorpRes_num>13)
 				break;
 		}
 
@@ -350,12 +360,12 @@ DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_r
 			//	printf("%d\n",morp_result.MorpRes_num);
 		//		memcpy(&(ma_result->IMR[ma_result->MARes_num]), &(local_ma_res.IMR[j]), sizeof(ITF_MORP_RESULT));
 		//2006.06.12 by mini 미등록어 조합형 형태소 분석 저장 
-				memcpy(&(morp_result.UK_MorpResult[morp_result.MorpRes_num]), &(local_morp_res.UK_MorpResult[j]), sizeof(tMORP_RESULT));
+				memcpy(&(morp_result->UK_MorpResult[morp_result->MorpRes_num]), &(local_morp_res->UK_MorpResult[j]), sizeof(tMORP_RESULT));
 		//		printf("MA:memcpy:%d nMorp:%d %s\n",ma_result->MARes_num,ma_result->IMR[0].nMorp,ma_result->IMR[0].MI[0].info);	
 				//printf("MORP:memcpy:%d nMorp:%d %s\n",morp_result.MorpRes_num,morp_result.UK_MorpResult[j].nMorp,morp_result.UK_MorpResult[j].MI[0].info);
 				//printf("MORP:memcpy:%d nMorp:%d %s\n",morp_result.MorpRes_num,morp_result.UK_MorpResult[j].nMorp,morp_result.UK_MorpResult[j].MI[1].info);
 		//		ma_result->MARes_num++;
-				morp_result.MorpRes_num++;
+				morp_result->MorpRes_num++;
 			}
 		}
 	}
@@ -375,12 +385,12 @@ DWORD KAnalysisUnknownWord(HANGUL *h_word, UWORD h_word_len, ITF_MA_RESULT *ma_r
 			//printf("dic_res_idx[%d]\n",i);
 			GetTAILContent(tail_dic_result[i].InfoStart, tail_dic_result[i].InfoLen, MARContent_org, PTAIL_MODE);
 			//printf("%d %d\n",tail_dic_result[i].InfoStart,tail_dic_result[i].InfoLen);
-			ptr = strtok(MARContent_org, "&");
-			strcpy(MARContent, ptr);
+			ptr = (UBYTE*)strtok((char*)MARContent_org, "&");
+			strcpy((char*)MARContent, (char*)ptr);
 			//printf("PTAIL_MODE:MARContent:%s\n",MARContent);
-			ptr = strtok(NULL, "&");
-			freq_ptail = atoi(ptr);
-			SaveUnknownMARes(&morp_result, h_word, h_word_len, tail_dic_result[i], MARContent, PTAIL_MODE);
+			ptr = (UBYTE*)strtok(NULL, "&");
+			freq_ptail = atoi((char*)ptr);
+			SaveUnknownMARes(morp_result.get(), h_word, h_word_len, tail_dic_result[i], MARContent, PTAIL_MODE);
 				
 //			SaveUnknownMARes(&morp_result, ma_result, h_word, h_word_len, tail_dic_result[i], MARContent, PTAIL_MODE);
 			//printf("PTAIL_MODE MARes_num:%d\n",morp_result.MorpRes_num);
@@ -404,19 +414,20 @@ SKIP_VA_CHECK:
 	
 	for(i=0;i<h_word_len;i++){
 		//ma_result->IMR[ma_result->MARes_num].MI[0].Morpheme[i]=h_word[i].j_code;
-		morp_result.UK_MorpResult[morp_result.MorpRes_num].MI[0].Morpheme[i]=h_word[i].j_code;
+		morp_result->UK_MorpResult[morp_result->MorpRes_num].MI[0].Morpheme[i]=h_word[i].j_code;
 //		MorpResult[MorpResult_Index].MI[Morpheme_Index].Morpheme[i]=h_word[i].j_code;
 	}
-	morp_result.UK_MorpResult[morp_result.MorpRes_num].MI[0].Morpheme[i]='\0';
-	strcpy(morp_result.UK_MorpResult[morp_result.MorpRes_num].MI[0].info,"nuk");
-	morp_result.UK_MorpResult[morp_result.MorpRes_num].MI[0].ninfo=1;
-	morp_result.UK_MorpResult[morp_result.MorpRes_num].nMorp=1;
-	morp_result.MorpRes_num++;
+	morp_result->UK_MorpResult[morp_result->MorpRes_num].MI[0].Morpheme[i]='\0';
+	strcpy(morp_result->UK_MorpResult[morp_result->MorpRes_num].MI[0].info,"nuk");
+	morp_result->UK_MorpResult[morp_result->MorpRes_num].MI[0].ninfo=1;
+	morp_result->UK_MorpResult[morp_result->MorpRes_num].nMorp=1;
+	morp_result->MorpRes_num++;
 	//printf("[%d]:morp_result.MorpRes_num",morp_result.MorpRes_num);
-	CopyMorpResult(&morp_result);
+	CopyMorpResult(morp_result.get());
 				
 	CopyMorpResultToMAResult(ma_result);
 	//printf("[MorpResult_Index:%d]\n",MorpResult_Index);
+
 	return 1;
 }
 
@@ -477,19 +488,19 @@ DWORD CopyMorpResultToMAResult(ITF_MA_RESULT *ma_result){
       //  	printf("M_MORPRESULT_MI_NINFO(i, j):%d\n",M_MORPRESULT_MI_NINFO(i, j));
         	if (M_MORPRESULT_MI_NINFO(i, j) == 1) {
 
-        		if (strlen(M_MORPRESULT_MI_INFO(i, j)) == 1) {
-            		strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+        		if (strlen((char*)M_MORPRESULT_MI_INFO(i, j)) == 1) {
+            		strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
             		Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
             		strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
         		} else {
-            		strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+            		strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
             		Convert_StrInfo(M_MORPRESULT_MI_INFO(i, j), info_str);
           //  		printf("M_MORPRESULT_MI_INFO(i, j)%s %s\n",M_MORPRESULT_MI_INFO(i, j),info_str);
             		strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
         		}
         	}
 			else {
-        		strcpy(ma_result->IMR[i].MI[l_idx].Morpheme, han_str);
+        		strcpy((char*)ma_result->IMR[i].MI[l_idx].Morpheme, (char*)han_str);
         		Convert_NumInfo(M_MORPRESULT_MI_INFO_ITEM(i, j, 0), info_str);
         		strcpy(ma_result->IMR[i].MI[l_idx].info, info_str);
         		for (k = 1; k < M_MORPRESULT_MI_NINFO(i, j); k++) {
@@ -507,8 +518,10 @@ DWORD CopyMorpResultToMAResult(ITF_MA_RESULT *ma_result){
 //	printf("ma_result->MARes_num:%d\n",ma_result->MARes_num);	
 	return 1;	
 }
-DWORD compare_prob(TAIL_PROB *node1, TAIL_PROB *node2)
+int compare_prob(const void*p1, const void*p2)
 {
+	TAIL_PROB *node1 = (TAIL_PROB *)p1;
+	TAIL_PROB *node2 = (TAIL_PROB *)p2;
 	if (node1->P > node2->P)
 		return -1;
 	else if (node1->P < node2->P)
@@ -549,7 +562,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
 		 */
 		ConvertJo2Wan(h_word, h_word_len - t_dic_res.len, WanStr);
 		//printf("h_word_len:%d\n",h_word_len);
-		ptr = strtok(MARContent, "_");
+		ptr = (UBYTE*)strtok((char*)MARContent, "_");
 		while (ptr != NULL) {
 			MorpCnt = ParseMorpStr(ptr, Morps);
 			nMorp = 0;
@@ -632,7 +645,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
 			if(MorpRes_num >13){
 				//printf("**MorpRes_num:%d\n",MorpRes_num);
 				break;}
-			ptr = strtok(NULL, "_");
+			ptr = (UBYTE*)strtok(NULL, "_");
 		}
 	} else if (mode == PTAIL_MODE) {
 		/*
@@ -640,17 +653,17 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
 		 */
 		memcpy(HanTail, &h_word[h_word_len - t_dic_res.len], sizeof(HANGUL) * t_dic_res.len);
 		//printf("h_word_len:%d t_dic_res.len:%d\n",h_word_len,t_dic_res.len);
-		ptr = strtok(MARContent, "_");
+		ptr = (UBYTE*)strtok((char*)MARContent, "_");
 		while (ptr != NULL) {
 			//	if (MARes_num > 29)
 			//	break;
 			if(MorpRes_num >13)
 				break;
-			strcpy(morp_list, ptr);
-			ptr_in = strtok(morp_list, "|");
-			strcpy(va_pos, ptr_in);
-			ptr_in = strtok(NULL, "|");
-			strcpy(va_morp_list, ptr_in);
+			strcpy((char*)morp_list, (char*)ptr);
+			ptr_in = (UBYTE*)strtok((char*)morp_list, "|");
+			strcpy(va_pos, (char*)ptr_in);
+			ptr_in = (UBYTE*)strtok(NULL, "|");
+			strcpy((char*)va_morp_list, (char*)ptr_in);
 
 			MorpCnt = ParseMorpStr(va_morp_list, Morps); 
 			FMI_num = ConvertWan2Jo(Morps[0].Morp, FirstMorpItem);
@@ -862,7 +875,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
 	
 					}
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}//if (HanTail[1].j_code == FirstMorpItem[0].j_code)
 
@@ -917,7 +930,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -973,7 +986,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 					
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -1027,7 +1040,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     MorpRes_num++;
                     morp_res->MorpRes_num=MorpRes_num;
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -1082,7 +1095,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     MorpRes_num++;
                     morp_res->MorpRes_num=MorpRes_num;
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -1136,7 +1149,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     	MorpRes_num++;
                     	morp_res->MorpRes_num=MorpRes_num;
 
-						ptr = strtok(NULL, "_");
+						ptr = (UBYTE*)strtok(NULL, "_");
 						continue;
 					} else {
 						memcpy(tmp_h_word, h_word, sizeof(HANGUL) * (h_word_len - t_dic_res.len + 1));
@@ -1186,7 +1199,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                         morp_res->MorpRes_num=MorpRes_num;
 
 
-						ptr = strtok(NULL, "_");
+						ptr = (UBYTE*)strtok(NULL, "_");
 						continue;
 					}
 				}
@@ -1243,7 +1256,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 				if ((HanTail[0].j_code == 0xcce1/*퍼*/ && FirstMorpItem[0].j_code == 0xb4e1/*어*/)
@@ -1296,7 +1309,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -1352,7 +1365,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 
@@ -1371,7 +1384,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
 							|| HanTail[1].j_code == 0xb681 || HanTail[1].j_code == 0xb5a1) { /* 운,울,우,오 */
 						;
 					} else {
-						ptr = strtok(NULL, "_");
+						ptr = (UBYTE*)strtok(NULL, "_");
 						continue;
 					}
 
@@ -1422,7 +1435,7 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                     morp_res->MorpRes_num=MorpRes_num;
 
 
-					ptr = strtok(NULL, "_");
+					ptr = (UBYTE*)strtok(NULL, "_");
 					continue;
 				}
 				/*ConvertJo2Wan(h_word, h_word_len-t_dic_res.len+1, WanStr);
@@ -1469,10 +1482,10 @@ DWORD SaveUnknownMARes(UK_MORP_RES *morp_res, HANGUL *h_word, UWORD h_word_len, 
                 MorpRes_num++;
                 morp_res->MorpRes_num=MorpRes_num;
 
-				ptr = strtok(NULL, "_");
+				ptr = (UBYTE*)strtok(NULL, "_");
 				continue;
 			}
-			ptr = strtok(NULL, "_");
+			ptr = (UBYTE*)strtok(NULL, "_");
 		}
 	}
 
@@ -1669,7 +1682,7 @@ DWORD ParseMorpStr(UBYTE *str, MORPHEME *morps)
 
 		if (*pStr == '/') {
 			token[idx] = '\0';
-			strcpy(morps[cnt].Morp, token);
+			strcpy((char*)morps[cnt].Morp, (char*)token);
 			idx = 0;
 			pStr++;
 
@@ -1678,7 +1691,7 @@ DWORD ParseMorpStr(UBYTE *str, MORPHEME *morps)
 
 		if (*pStr == '+') {
 			token[idx] = '\0';
-			strcpy(morps[cnt].Tag, token);
+			strcpy(morps[cnt].Tag, (char*)token);
 			idx = 0;
 			cnt++;
 			pStr++;
@@ -1691,7 +1704,7 @@ DWORD ParseMorpStr(UBYTE *str, MORPHEME *morps)
 	}
 
 	token[idx] = '\0';
-	strcpy(morps[cnt].Tag, token);
+	strcpy(morps[cnt].Tag, (char*)token);
 	cnt++;
 
 	return cnt;

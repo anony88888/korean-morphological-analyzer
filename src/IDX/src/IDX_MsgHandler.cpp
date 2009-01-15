@@ -205,8 +205,10 @@ int IDX_MainProc(unsigned char req, char *data, POSTINFO *PostInfo, int startWor
 			cl2 = clock();
 			total_time += (cl2 - cl1);
 #endif
-			if (IdxBigram) return IDX_AddIndexBigram(PostInfo, PostInfoCnt);
-			else return PostInfoCnt;
+			if (IdxBigram)
+				return IDX_AddIndexBigram(PostInfo, PostInfoCnt);
+			else
+				return PostInfoCnt;
 
 		case INDEX_AS_IS_MA:
 #ifdef TIME_CHECK
@@ -252,7 +254,7 @@ int IDX_MainProc(unsigned char req, char *data, POSTINFO *PostInfo, int startWor
 			return PostInfoCnt;
 
 		case HANJA_2_HANGUL:
-			Hanja2Hangul_UTF8(data, inner_buf);
+			Hanja2Hangul_UTF8((unsigned char*)data, (unsigned char*)inner_buf);
 			if (strlen(inner_buf) > MAXKEYLEN) {
 				ptr = inner_buf;
 				PostInfoCnt = 0;
@@ -616,3 +618,4 @@ int IDX_IndexByMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 	return PostInfoCnt;
 }
 #endif
+

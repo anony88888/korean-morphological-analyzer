@@ -12,7 +12,7 @@
 #include <IDX_user.h>
 #include <ConvertUTF.h>
 
-#define	SYS_MADICTDIRECTORY	"lib/k_dic"
+#define	SYS_MADICTDIRECTORY	"k_dic"
 
 //#define MAXPOSTINFOSIZE		50000
 //#define MAXPOSTINFOSIZE		100000

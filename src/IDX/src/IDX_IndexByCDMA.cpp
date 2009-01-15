@@ -113,7 +113,7 @@ int IDX_IndexByCDMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 		u8_str[u8str_len] = '\0';
 		
 		/* 불용어 제거 */
-		if (IDX_FindStopWord(u8_str))
+		if (IDX_FindStopWord((char*)u8_str))
 			continue;
 
 		switch (ret_tok) {
@@ -182,7 +182,7 @@ int IDX_IndexByCDMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 						 */
 						if (idx_words.IDX[j].str_len >= 2 && idx_words.nIndex == 1) {
 							/* 불용어 제거 */
-							if (IDX_FindStopWord(u8_str))
+							if (IDX_FindStopWord((char*)u8_str))
 								continue;
 						}
 
@@ -301,7 +301,7 @@ int IDX_IndexByCDMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				/* "한자는 그대로" 플래그가 세팅되지 않으면 한글로 변환 */
 				/* 수정 : 한자 플래그 1 --> 변환 */
 				if (HanjaFlag == 1) {
-					Hanja2Hangul_UCS4((int *)token, token_len, (int *)hconv_tok);
+					Hanja2Hangul_UCS4((UTF32 *)token, token_len, (UTF32 *)hconv_tok);
 
 					/* 색인 수행 */
 
@@ -398,7 +398,7 @@ int IDX_IndexByCDMA(char *SecVal, POSTINFO *PostInfo, int StopCheck)
 				u8_str[u8str_len] = '\0';
 				*/
 				strcpy(PostInfo[PostInfoCnt].key, (char *) u8_str);
-				PostInfo[PostInfoCnt].keyLen = strlen(u8_str);
+				PostInfo[PostInfoCnt].keyLen = strlen((char*)u8_str);
 				PostInfo[PostInfoCnt].psgNum = 1;
 				PostInfo[PostInfoCnt].wordNum = wordNum++;
 

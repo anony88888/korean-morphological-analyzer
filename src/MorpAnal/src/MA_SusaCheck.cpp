@@ -46,7 +46,7 @@ DWORD CheckSusaWord(HANGUL *hword, DWORD hword_len, UBYTE *word, tMORP_RESULT *s
 	}
 
 	/* 길이가 1 이하이면 FALSE */
-	if (strlen(word) <= 1)
+	if (strlen((char*)word) <= 1)
 		return 0;
 
 	/* 만일 수사로 시작하면 OK */
@@ -72,7 +72,7 @@ DWORD SusaSearch(UBYTE *word, DWORD *dic_ret, DWORD *dic_ret_idx)
 	DWORD i, index, num;
 
 	/* 한글이 아닌 글자로 시작하는 단어는 무조건 실패... */
-	if (word[0] & 0x80 == 0)
+	if ((word[0] & 0x80) == 0)
 		return 0;
 	
 	*dic_ret_idx = 0;
@@ -87,14 +87,14 @@ DWORD SusaSearch(UBYTE *word, DWORD *dic_ret, DWORD *dic_ret_idx)
 			break;
 
 	if (i == SUSA_INDEX_NUM) {
-		if (!strncmp(word, "몇", 2)) {
+		if (!strncmp((char*)word, "몇", 2)) {
 			dic_ret[*dic_ret_idx] = 90;
 			*dic_ret_idx = 1;
 
 			return 2;
 		}
 
-		if (!strncmp(word, "여러", 4)) {
+		if (!strncmp((char*)word, "여러", 4)) {
 			dic_ret[*dic_ret_idx] = 91;
 			*dic_ret_idx = 1;
 
@@ -110,7 +110,7 @@ DWORD SusaSearch(UBYTE *word, DWORD *dic_ret, DWORD *dic_ret_idx)
 
 	/* 수사를 탐색 */
 	for (i = index; i < index + num; i++) {
-		if (!strncmp(word, SusaWords[i].Str, SusaWords[i].len * 2)) {
+		if (!strncmp((char*)word, (char*)SusaWords[i].Str, SusaWords[i].len * 2)) {
 			dic_ret[*dic_ret_idx] = i;
 			(*dic_ret_idx)++;
 		}
@@ -127,14 +127,14 @@ DWORD SusaSearch(UBYTE *word, DWORD *dic_ret, DWORD *dic_ret_idx)
 		}
 */
 
-		if (!strncmp(word, "몇", 2)) {
+		if (!strncmp((char*)word, "몇", 2)) {
 			dic_ret[*dic_ret_idx] = 90;
 			*dic_ret_idx = 1;
 
 			return 2;
 		}
 
-		if (!strncmp(word, "여러", 4)) {
+		if (!strncmp((char*)word, "여러", 4)) {
 			dic_ret[*dic_ret_idx] = 91;
 			*dic_ret_idx = 1;
 
@@ -158,7 +158,7 @@ DWORD SusaUnitSearch(HANGUL *hword, DWORD hword_len, UWORD *idx)
 
     for (i = SUSA_UNIT_NOUN_NUM-1; i >= 0; i--) {
 	for (j = hword_len; j >= 1; j--) {
-	    if (DanWiNoun[i].len == j && !strncmp((UBYTE *)DanWiNoun[i].jStr, (UBYTE *)hword, sizeof(HANGUL) * j))
+	    if (DanWiNoun[i].len == j && !strncmp((char*)DanWiNoun[i].jStr, (char*)hword, sizeof(HANGUL) * j))
 		break;
 	}
 	if (j > 0)
@@ -247,7 +247,7 @@ DWORD CheckSusa(UBYTE *word, HANGUL *hword, DWORD hword_len,
 			return 0;
 
 		/* '여러' 다음에는 무조건 단위명사만 온다 */
-		if (strncmp(word, "여러", 4)) {
+		if (strncmp((char*)word, "여러", 4)) {
 			/* 십, 백, 천, 만, 억, 검색 */
 			while (1) {
 				if (*pSusaWord == '\0')
@@ -255,7 +255,7 @@ DWORD CheckSusa(UBYTE *word, HANGUL *hword, DWORD hword_len,
 
 				ret_val = SusaSearch(pSusaWord, sDicRes, &sDicRes_idx);
 				if (!ret_val || SusaWords[sDicRes[sDicRes_idx-1]].info != SUSA_INFO_7) {
-					if (!strncmp(pSusaWord, "십", 2)) {
+					if (!strncmp((char*)pSusaWord, "십", 2)) {
 						sDicRes[0] = 63;
 						sDicRes_idx = 1;
 					} else

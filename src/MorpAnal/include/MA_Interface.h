@@ -136,7 +136,7 @@ typedef struct {
 /* 라이브러리에서 Export되는 함수들 proto-type */
 
 #ifdef __cplusplus
-extern "C" {
+//extern "C" {
 #endif
 
 #ifdef MADLL_EXPORTS
@@ -168,7 +168,7 @@ int GetIndexWord(unsigned char *ma_buf, INDEX_WORD *idx_words);
 #endif
 int Jo_Str_IDX(unsigned char *data,FILE *out);
 #ifdef __cplusplus
-}
+//}
 #endif
 
 

@@ -29,7 +29,7 @@ tMEMORY* MemoryAppend(tMEMORY *block, UDWORD bytes)
 	old_size = Memory_Bytes(block);
 	old_header = Memory_Header(block);
 
-	new_header = realloc(old_header, old_size + sizeof(tMEMORY_HEADER) + bytes);
+	new_header = (tMEMORY_HEADER *)realloc(old_header, old_size + sizeof(tMEMORY_HEADER) + bytes);
 
 	if (new_header == 0x0)
 		printf("Memory Realloc Fail...\n");
@@ -61,11 +61,11 @@ tMEMORY* MemoryDelete(tMEMORY *block, UDWORD bytes)
 	old_size = Memory_Bytes(block);
 	old_header = Memory_Header(block);
 	if (old_size <= bytes) {
-		new_header = realloc(old_header, sizeof(tMEMORY_HEADER));
+		new_header = (tMEMORY_HEADER *)realloc(old_header, sizeof(tMEMORY_HEADER));
 		new_header->size = 0;
 	} else {
 		new_size = old_size + sizeof(tMEMORY_HEADER) - bytes;
-		new_header = realloc(old_header, new_size);
+		new_header = (tMEMORY_HEADER *)realloc(old_header, new_size);
 		new_header->size = new_size;
 	}
 	new_block = new_header + 1;

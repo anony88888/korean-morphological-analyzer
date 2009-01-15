@@ -4,7 +4,7 @@
 #include <IDX_Hanja2Hangul.h>
 #include <HanjaHangulMap.h>
 
-#include <iconv.h>
+//#include <iconv.h>
 #include <ConvertUTF.h>
 #include <UnicodeBlocks31.h>
 
@@ -31,11 +31,11 @@ int LoadHanjaTable(char *TableName)
 {
 	FILE *fd_in;
 	char line[8192], code[5], str[512];
-	char cvt_str[512];
+	//char cvt_str[512];
 	char *ptr;
-	long int init_val, code_val;
+	//long int init_val, code_val;
 	int i, res, first_flag;
-	int str_len, cvt_str_len;
+	//int str_len, cvt_str_len;
 	UTF32 utf32_val[10], utf32_initval, *utf32_ptr;
 	UTF16 utf16_val[10], *utf16_ptr;
 	//iconv_t cd = (iconv_t)-1;
@@ -106,7 +106,7 @@ int LoadHanjaTable(char *TableName)
 		cvt_str[cvt_str_len] = '\0';
 		strcpy(Hj2Hg_Table[utf32_val[0]-utf32_initval], cvt_str);
 		*/
-		strcpy(Hj2Hg_Table[utf32_val[0]-utf32_initval], str);
+		strcpy((char*)Hj2Hg_Table[utf32_val[0]-utf32_initval], str);
 	}
 	TableSize = utf32_val[0]-utf32_initval;
 
@@ -133,7 +133,7 @@ int GetHangulChars(unsigned int hj_code, char *hg_buf)
 		return 0;
 
 
-	strcpy(hg_buf, Hj2Hg_Table[hj_code-Table_InitVal]);
+	strcpy(hg_buf, (char*)Hj2Hg_Table[hj_code-Table_InitVal]);
 	//printf("0x%x:%s<p>\n", hj_code, hg_buf);
 
 	return 1;
@@ -146,9 +146,9 @@ void Hanja2Hangul_UTF8(unsigned char *src, unsigned char *dest)
 	unsigned short unicode = 0x00000000;
     int i, j, len;
 
-	strcpy(dest, src);
+	strcpy((char*)dest, (char*)src);
 
-	len = strlen(dest);
+	len = strlen((char*)dest);
 	for (i = 0; i < len;) {
 		c = dest[i] & 0xe0;
 		if (c < 0x80) {

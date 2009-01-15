@@ -49,9 +49,8 @@ static void	to_lower_case(),
 	double dSFClocks = 0.0; 
 #endif
 
-void IDX_strip_affixes ( string, pLen )
-	char *string;
-	int  *pLen;	/* length of this string */
+void IDX_strip_affixes ( char *string
+						, int  *pLen )	/* length of this string */
 {
 /*	to_lower_case(string); */	/* processed previously */
 /*	clean(string); */
@@ -78,8 +77,7 @@ void IDX_strip_affixes ( string, pLen )
 */
 }
 
-static void to_lower_case ( kwd )
-	char *kwd;
+static void to_lower_case ( char *kwd )
 {
 	int i;
 	for ( i=0 ; i < strlen(kwd) ; i++ )
@@ -87,8 +85,7 @@ static void to_lower_case ( kwd )
 			kwd[i] += 'a' - 'A';
 }
 
-static void clean ( kwd )
-	char *kwd;
+static void clean ( char *kwd )
 {
 	int i,j,last=strlen(kwd);
 	for ( i=0 ; i < last ; i++ ) {
@@ -102,8 +99,7 @@ static void clean ( kwd )
 	}
 }
 
-static int isvalid(l)
-	char l;
+static int isvalid(char l)
 {
 	if ( (l >= 'a') && (l <= 'z') )
 		return(0);
@@ -147,21 +143,7 @@ static void strip_prefixes ( string, pLen )
 }
 #endif
 
-static void strip_suffixes ( string, pLen )
-	char *string;
-	int  *pLen;	/* length of the string/modified by jskim 990829 */
-{
-	void step_1(), step_2(), step_3(), step_4(), step_5();
-	step_1 ( string, pLen );
-	step_2 ( string, pLen );
-	step_3 ( string, pLen );
-	step_4 ( string, pLen );
-	step_5 ( string, pLen );
-}
-
-static void step_1 ( string, pLen )
-    char *string;
-    int  *pLen;
+static void step_1 ( char *string, int  *pLen )
 {
     char stem[BIG_KEYWORDSIZE];
     int stemlen;
@@ -220,9 +202,7 @@ static void step_1 ( string, pLen )
     }
 }
 
-static void step_2 ( string, pLen )
-    char *string;
-    int *pLen;
+static void step_2 ( char *string, int *pLen )
 {
     static char *suffixes[][2] =  { { "ational", "ate" },
 				{ "tional",  "tion" },
@@ -268,9 +248,7 @@ static void step_2 ( string, pLen )
     return;
 }
 
-static void step_3 ( string, pLen )
-    char *string;
-    int  *pLen;
+static void step_3 ( char *string, int  *pLen )
 {
     static char *suffixes[][2] = { { "icate", "ic" },
 				{ "ative", "" },
@@ -297,9 +275,7 @@ static void step_3 ( string, pLen )
     return;
 }
 
-static void step_4 ( string, pLen )
-    char *string;
-    int *pLen;
+static void step_4 ( char *string, int *pLen )
 {
     static char *suffixes[] = { "al", "ance", "ence", "er", "ic", "able",
 	"ible", "ant", "ement", "ment", "ent", "sion", "tion",
@@ -322,9 +298,7 @@ static void step_4 ( string, pLen )
     return;
 }
 
-static void step_5 ( string, pLen )
-    char *string;
-    int *pLen;
+static void step_5 ( char *string, int *pLen )
 {
     if ( string[*pLen - 1] == 'e' ) {
 	if ( measure2(string, *pLen) > 1 ) {
@@ -349,14 +323,18 @@ static void step_5 ( string, pLen )
     }
 }
 
-static int has_suffix2 ( word, wordlen, suffix, suffixlen, stem, stemlen )
-    char *word;
-    int wordlen;
-    char *suffix;
-    int suffixlen;
-    char *stem;
-    int *stemlen;
+static void strip_suffixes ( char *string
+							, int  *pLen )	/* length of the string/modified by jskim 990829 */
 {
+	step_1 ( string, pLen );
+	step_2 ( string, pLen );
+	step_3 ( string, pLen );
+	step_4 ( string, pLen );
+	step_5 ( string, pLen );
+}
+
+static int has_suffix2 ( char *word, int wordlen, char *suffix, int suffixlen, char *stem, int *stemlen )
+ {
     if (wordlen <= suffixlen) return(FALSE);
     /*
     if ( (suffixlen > 1) && (word[wordlen-2] != suffix[suffixlen-2]) )
@@ -372,8 +350,7 @@ static int has_suffix2 ( word, wordlen, suffix, suffixlen, stem, stemlen )
     return (FALSE);
 }
 
-static int has_suffix ( word, suffix, stem )
-	char *word, *suffix, *stem;
+static int has_suffix ( char *word, char *suffix, char *stem )
 {
 	char tmp[BIG_KEYWORDSIZE];
 	if ( strlen(word) <= strlen(suffix) )
@@ -392,9 +369,7 @@ static int has_suffix ( word, suffix, stem )
 		return(FALSE);
 }
 
-static int cvc ( string, Len )
-    char *string;
-    int Len;
+static int cvc ( char *string, int Len )
 {
     int length= Len;
     if ( length < 3 )
@@ -411,8 +386,7 @@ static int cvc ( string, Len )
 	return(FALSE);
 }
 
-static int vowel ( ch, prev )
-	char ch, prev;
+static int vowel ( char ch, char prev )
 {
 	switch ( ch ) {
 		case 'a':
@@ -428,8 +402,7 @@ static int vowel ( ch, prev )
 	}
 }
 
-static int measure ( stem )
-	char *stem;
+static int measure ( char *stem )
 {
 	register int i=0, count = 0;
 	int length=strlen(stem);
@@ -460,9 +433,7 @@ static int measure ( stem )
 	return(count);
 }
 
-static int measure2( stem, length )
-    char *stem;
-    int length;
+static int measure2( char *stem, int length )
 {
     register int i=0, count = 0;
     while ( i < length ) {
@@ -494,9 +465,7 @@ static int measure2( stem, length )
     return(count);
 }
 
-static int contains_vowel ( word, len )
-    char *word;
-    int len;
+static int contains_vowel ( char *word, int len )
 {
     register int i;
     for ( i=0 ; i < len ; i++ )

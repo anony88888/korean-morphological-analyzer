@@ -114,7 +114,7 @@ DWORD TopicMorpAnal(HANGUL *hword, UWORD hword_len, DWORD mode, DWORD jong)
 		   ¹«Á¶°Ç Fail */
 		for (i = 0; i < dic_res_idx; i++)
 #ifdef MULTI_DIC_INFO
-			if (strchr(dic_result[i].info, (BYTE) 31)) {
+			if (strchr((char*)dic_result[i].info, (BYTE) 31)) {
 				dic_result[i].info[0] = 31;
 				dic_result[i].info[1] = '\0';
 				break;
