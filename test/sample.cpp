@@ -1,8 +1,6 @@
 // test_idx.cpp : Defines the entry point for the console application.
 //
 
-#if 1
-
 #include <stdio.h> 
 #include <cstring> 
 #include <string>
@@ -63,8 +61,8 @@ void main(int argc, char **argv)
 	{ 
 		src = (const char *) line; 
 		//EUCKR_TO_UTF8(src, dest);  // utf-8 로  변환 
-		//PostInfoNum = IDX_MainProc(INDEX_BY_MA, (char *) src.c_str(), postInfo, 0, opt); 
-		PostInfoNum = IDX_MainProc(INDEX_BY_MIX_MA, (char *) src.c_str(), postInfo, 0, opt); 
+		PostInfoNum = IDX_MainProc(INDEX_BY_MA, (char *) src.c_str(), postInfo, 0, opt); 
+		//PostInfoNum = IDX_MainProc(INDEX_BY_MIX_MA, (char *) src.c_str(), postInfo, 0, opt); 
 		for (int i = 0; i < PostInfoNum; i++)   
 		{ 
 			src = (const char *)postInfo[i].key; 
@@ -81,39 +79,3 @@ void main(int argc, char **argv)
 	IDX_CloseIDX(); 
 } 
 
-#else
-
-#include "IDX_user.h"
-#include "MA_Interface.h"
-#include <iostream>
-
-int main(int argc, char* argv[])
-{
-
-	int ret;
-	unsigned char req = INDEX_BY_MA;
-	char *data = "나는 나는 새가 좋다";
-	POSTINFO PostInfo;
-	int startWordNum = 0;
-	STRUCT_OPTION_IDX opt;
-	char *dic_dir = "F:\\proj\\search\\libidx\\test_idx";
-	
-	IDX_InitIDX(dic_dir);
-
-	ifstream is("test.txt");
-
-	opt.highlight = 0;
-	opt.stem = 1;
-	opt.hanja = 1;
-	opt.hj_hg = 0;
-	opt.idx_bigram = 0;
-	opt.dels = 0;
-	opt.dCode = 0;
-
-	ret = IDX_MainProc(req, data, &PostInfo, startWordNum, opt);
-
-	IDX_CloseIDX();
-	return 0;
-}
-
-#endif
